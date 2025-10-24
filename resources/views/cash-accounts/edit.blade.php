@@ -1,0 +1,55 @@
+@php
+    use App\Helpers\CommonHelper;
+@endphp
+@extends('layouts.layouts')
+@section('content')
+    <div class="well_N">
+        <div class="boking-wrp dp_sdw">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    {{ CommonHelper::displayPageTitle('Edit Cash Account Detail') }}
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right">
+                    <a href="{{ route('cash-accounts.index') }}" class="btn btn-success btn-xs">+ View List</a>
+                </div>
+            </div>
+            <div class="row">
+                <form method="POST" action="{{ route('cash-accounts.update', $cashAccount->id) }}">
+                    @csrf
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                <label>Account Name</label>
+                                <select name="acc_id" id="acc_id" class="form-control">
+                                    @foreach ($chartOfAccountList as $coalRow)
+                                        <option value="{{ $coalRow->code }}"
+                                            {{ $cashAccount->acc_id == $coalRow->code ? 'selected' : '' }}>
+                                            {{ $coalRow->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                <label>Cash Account Name</label>
+                                <input type="text" name="name"
+                                    class="form-control @error('name') border border-danger @enderror" id="name"
+                                    value="{{ old('name', $cashAccount->name) }}" />
+                                @error('name')
+                                    <div class="text-sm text-danger text-red-600">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="lineHeight">&nbsp;</div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
+                                <button type="reset" id="reset" class="btn btn-primary">Clear Form</button>
+                                <button type="submit" class="btn btn-sm btn-success">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+@endsection

@@ -1,0 +1,28 @@
+@media all {
+  .clearable {
+    background: url(http://i.imgur.com/z7ZSYjt.png) no-repeat right -10px center;
+  }
+  .clearable.x {
+    background-position: right 5px center;
+  }
+  .clearable.onX {
+    cursor: pointer;
+  }
+  .dropdown-menu li a:hover {
+    cursor: pointer;
+  }
+  
+  .subHeading{
+    font-weight: bold;
+    font-size: 20px;
+    border-color: #000;
+  }
+  .floatLeft{
+    width: 40%;
+    float: left;
+  }
+  .floatRight{
+    width: 40%;
+    float: right;
+  }
+}

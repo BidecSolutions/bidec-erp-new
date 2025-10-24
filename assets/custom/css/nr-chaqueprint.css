@@ -1,0 +1,66 @@
+body{
+	font-family: 'Sarabun', sans-serif;
+	}
+.rotate {
+  -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+    margin-top: 64mm;
+    margin-left: -18mm;
+}
+
+#capture {
+    height: 290px;
+    width: 863px
+}
+
+.nr-general {
+    position: absolute;
+    text-transform: uppercase
+}
+
+.nr-date-bold,
+.nr-name-bold,
+.nr-amount-bold,
+.nr-words-amount-bold {
+    font-weight: 600;
+    font-size: 4mm
+}
+
+.nr-date-small,
+.nr-name-small,
+.nr-amount-small,
+.nr-words-amount-small {
+    font-size: 3mm
+}
+.nr-date-bold{
+    letter-spacing: 1mm;
+}
+.nr-name-small{
+   width: 123px;
+}
+
+.nr-words-amount-bold{
+	    width: 361px;
+		line-height: 26px;
+}
+
+.ac-payee{
+    position: absolute;
+	-webkit-transform: rotate(-28deg);
+    -moz-transform: rotate(-28deg);
+    -o-transform: rotate(-28deg);
+    -ms-transform: rotate(-28deg);
+    transform: rotate(-28deg);
+    margin-left: 46mm;
+    z-index: 10000;
+    width: 41mm;
+    border-top: 0.2mm solid #9E9E9E;
+    border-bottom: 0.2mm solid #9E9E9E;
+    text-align: center;
+    margin-top: 10mm;
+	font-weight: 600;
+}
+

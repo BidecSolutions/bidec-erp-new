@@ -1,0 +1,40 @@
+.btn-dashboard {
+     background-color: #e41b17;
+}
+.erp-menus {
+    background-color: #e41b17;
+}
+.user-name-drop .dropdown-toggle {
+    background-color: #e41b17;
+    background: linear-gradient(to right, #e42e16 0%, #ca2611 100%);
+}
+.account-information .title {
+    background-color: #e41b17;
+    background: linear-gradient(to right, #e42e16 0%, #ad2513 100%);
+}
+.mega-dropdown-menu .dropdown-header{
+    background-color: #e41b17;
+}
+
+.all-company .col-sm-12 ul li{
+	background-color: #e41b17;
+}
+
+/* NEW STARING  */
+.theme-f-clr{
+	color:#e41b17;
+	}
+.theme-btn{
+     background-color: #e41b17;
+	 color:#fff;
+}
+.theme-btn.focus, .theme-btn:focus, .theme-btn:hover{
+	color:#fff;	
+}
+.theme-bg{
+ background-color: #e41b17;
+}
+.theme-bg{
+	background-color: #e41b17;
+	color:#fff;
+}
