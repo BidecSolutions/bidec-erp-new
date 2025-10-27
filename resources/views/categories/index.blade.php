@@ -38,9 +38,28 @@
                                 {{CommonHelper::displayPageTitle('View Categories List')}}
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right hidden-print">
-                                <a href="{{ route('categories.create') }}" class="btn btn-success btn-xs">+ Create New</a>
+                                 <button type="button" class="btn btn-success btn-xs" id="openCategoryModal">
+                                    + Create New
+                                </button>
                             </div>
                         </div>
+                    </div>
+                    <div class="modal fade" id="createCategoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                        
+                        <div class="modal-header" style="border-bottom: 1px solid #ddd;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeModalBtn" style="font-size: 28px;">
+                            &times;
+                            </button>
+                            <h4 class="modal-title">Add New Category</h4>
+                        </div>
+
+                        <div class="modal-body" id="createCategoryModalContent">
+                            <!-- Your dynamic form will load here -->
+                        </div>
+                        </div>
+                    </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive wrapper">
@@ -75,4 +94,29 @@
             get_ajax_data();
         });
     </script>
+    <script>
+        $(document).ready(function() {
+    $('#openCategoryModal').click(function() {
+    $.ajax({
+                url: "{{ route('categories.create') }}?type=model&columnId=category_id",
+                type: 'GET',
+                success: function(response) {
+                    $('#createCategoryModalContent').html(response);
+                    $('#createCategoryModal').modal('show');
+                    $('#createCategoryModal').on('shown.bs.modal', function() {
+                        $('.select2').select2({ dropdownParent: $('#createCategoryModal') });
+                    });
+                },
+                error: function(xhr) {
+                    alert('Error loading form: ' + xhr.statusText);
+                }
+            });
+        });
+    });
+    // Reset form when modal is closed
+    $('#createCategoryModal').on('hidden.bs.modal', function () {
+        $('#categoryForm')[0].reset();
+    });
+
+</script>
 @endsection

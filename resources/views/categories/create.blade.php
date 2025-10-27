@@ -1,7 +1,7 @@
 @php
 use App\Helpers\CommonHelper;
 @endphp
-<div class="well_N">
+
     <div class="boking-wrp dp_sdw">
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
@@ -59,7 +59,7 @@ use App\Helpers\CommonHelper;
                 @endphp
 
                 @foreach($imageFields as $field => $label)
-                <div class="col-lg-4 hidden">
+                <div class="col-lg-4">
                     <div class="form-group">
                         <label class="form-label" for="{{ $field }}">{{ $label }}</label>
                         <input type="file" id="{{ $field }}" name="{{ $field }}" class="form-control">
@@ -79,30 +79,40 @@ use App\Helpers\CommonHelper;
             </div>
         </form>
     </div>
-</div>
-<script>
-    // AJAX Form Submission Function
-    function submitForm(formId) {
-        // Create a new FormData object to gather the form data
-        var formData = new FormData(document.getElementById(formId));
-        var columnId = '<?php echo $columnId ?>';
 
-        // Perform the AJAX request
-        $.ajax({
-            url: $('#' + formId).attr('action'), // Get the form action URL
-            type: 'POST',
-            data: formData,
-            processData: false, // Do not process FormData into a query string
-            contentType: false, // Let FormData set the content type
-            success: function(response) {
-                var option = '<option value="' + response.data.id + '">' + response.data.name + '</option>';
-                $('.' + columnId).append(option);
-                $('#showFormModelForDataInsert').modal('toggle');
-            },
-            error: function(xhr, status, error) {
-                // Handle the error response
-                alert('Error: ' + xhr.responseText);
+<script>
+
+function submitForm(formId) {
+    var formData = new FormData(document.getElementById(formId));
+
+    $.ajax({
+        url: $('#' + formId).attr('action'),
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+ 
+            $('#createCategoryModal').modal('hide');
+            Swal.fire({
+                title: "Success!",
+                text: "Category has been created successfully.",
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            if (typeof get_ajax_data === "function") {
+                get_ajax_data();
             }
-        });
-    }
+        },
+        error: function(xhr) {
+            Swal.fire({
+                title: "Error!",
+                text: "Something went wrong. Please try again.",
+                icon: "error"
+            });
+        }
+    });
+}
 </script>

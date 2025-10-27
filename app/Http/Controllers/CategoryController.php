@@ -117,7 +117,7 @@ class CategoryController extends Controller
             // Ensure you're passing the correct data to the view
             return view($this->pageTwo . 'create', ['page' => $this->page, 'pageOptionType' => 'normal', 'columnId' => '', 'categories' => $categories,'chartOfAccountList' => $chartOfAccountList]);
         }
-
+      
         return view($this->page . 'create', compact('categories','chartOfAccountList'));
     }
 
@@ -171,11 +171,14 @@ class CategoryController extends Controller
                 $accountData['level' . ($index + 1)] = $level;
             }
 
-            // Insert new chart of account and get the ID
-            $chartOfAccountId = DB::table('chart_of_accounts')->insertGetId($accountData);
-            generate_json('chart_of_accounts');
+            // // Insert new chart of account and get the ID
+            // $chartOfAccountId = DB::table('chart_of_accounts')->insertGetId($accountData);
+            // generate_json('chart_of_accounts');
 
             // Initialize the Category model
+           $chartOfAccountId = DB::table('chart_of_accounts')->insertGetId($accountData);
+        // Example: cache or log data instead of generate_json
+
             $category = new Category();
 
             // Assign basic data
