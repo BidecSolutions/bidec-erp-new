@@ -1,10 +1,9 @@
 <section class="footer-section">
 	<div class="container">
 		<div class="row">
-			<div class="text-center">
-				<p>&copy; <?php echo date('Y')?> Bidec Accounts | All rights reserved.</p>
+			<div class="col-12 text-center">
+				<p>&copy; {{ date('Y') }} Bidec ERP | All rights reserved.</p>
 			</div>
 		</div>
 	</div>
 </section>
-<!-- Start of LiveChat (www.livechatinc.com) code -->

@@ -368,7 +368,6 @@
         </div>
     </div>
 
-    @include('includes._footer')
     <script>
         function openTraceStockModel() {
             var pageType = true;
@@ -500,55 +499,118 @@
             });
         }
 
-        $('body').on('click', '#inactive-record', function() {
-            var userURL = $(this).data('url');
-            //alert(userURL);
-            //return 'Testing';
+        // $('body').on('click', '#inactive-record', function() {
+        //     var userURL = $(this).data('url');
+        //     //alert(userURL);
+        //     //return 'Testing';
 
-            var trObj = $(this);
-            if (confirm("Are you sure you want to remove this?") == true) {
-                $.ajax({
-                    url: userURL,
-                    type: 'POST',
-                    dataType: 'json',
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                    },
-                    success: function(data) {
-                        if (typeof(data.success) == 'undefined') {
-                            alert(data.catchError);
-                            return;
-                        }
-                        alert(data.success);
-                        $("#filter-button").click();
-                        get_ajax_data();
+        //     var trObj = $(this);
+        //     if (confirm("Are you sure you want to remove this?") == true) {
+        //         $.ajax({
+        //             url: userURL,
+        //             type: 'POST',
+        //             dataType: 'json',
+        //             data: {
+        //                 "_token": "{{ csrf_token() }}",
+        //             },
+        //             success: function(data) {
+        //                 if (typeof(data.success) == 'undefined') {
+        //                     alert(data.catchError);
+        //                     return;
+        //                 }
+        //                 alert(data.success);
+        //                 $("#filter-button").click();
+        //                 get_ajax_data();
+        //             }
+        //         });
+        //     }
+        // });
+        $('body').on('click', '#inactive-record', function() {
+    var userURL = $(this).data('url');
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You want to deactivate this record?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, deactivate it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: userURL,
+                type: 'POST',
+                dataType: 'json',
+                data: { "_token": "{{ csrf_token() }}" },
+                success: function(data) {
+                    if (typeof(data.success) == 'undefined') {
+                        Swal.fire("Error", data.catchError, "error");
+                        return;
                     }
-                });
-            }
-        });
-        $('body').on('click', '#active-record', function() {
-            var userURL = $(this).data('url');
-            var trObj = $(this);
-            if (confirm("Are you sure you want to remove this?") == true) {
-                $.ajax({
-                    url: userURL,
-                    type: 'POST',
-                    dataType: 'json',
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                    },
-                    success: function(data) {
-                        if (typeof(data.success) == 'undefined') {
-                            alert(data.catchError);
-                            return;
-                        }
-                        alert(data.success);
-                        $("#filter-button").click();
-                        get_ajax_data();
+                    Swal.fire("Deactivated!", data.success, "success");
+                    $("#filter-button").click();
+                    get_ajax_data();
+                }
+            });
+        }
+    });
+});
+
+        // $('body').on('click', '#active-record', function() {
+        //     var userURL = $(this).data('url');
+        //     var trObj = $(this);
+        //     if (confirm("Are you sure you want to remove this?") == true) {
+        //         $.ajax({
+        //             url: userURL,
+        //             type: 'POST',
+        //             dataType: 'json',
+        //             data: {
+        //                 "_token": "{{ csrf_token() }}",
+        //             },
+        //             success: function(data) {
+        //                 if (typeof(data.success) == 'undefined') {
+        //                     alert(data.catchError);
+        //                     return;
+        //                 }
+        //                 alert(data.success);
+        //                 $("#filter-button").click();
+        //                 get_ajax_data();
+        //             }
+        //         });
+        //     }
+        // });
+$('body').on('click', '#active-record', function() {
+    var userURL = $(this).data('url');
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You want to activate this record?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#28a745",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, activate it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: userURL,
+                type: 'POST',
+                dataType: 'json',
+                data: { "_token": "{{ csrf_token() }}" },
+                success: function(data) {
+                    if (typeof(data.success) == 'undefined') {
+                        Swal.fire("Error", data.catchError, "error");
+                        return;
                     }
-                });
-            }
-        });
+                    Swal.fire("Activated!", data.success, "success");
+                    $("#filter-button").click();
+                    get_ajax_data();
+                }
+            });
+        }
+    });
+});
 
 
         $('body').on('click', '#unsuspended-record', function() {
