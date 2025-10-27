@@ -368,7 +368,6 @@
         </div>
     </div>
 
-    @include('includes._footer')
     <script>
         function openTraceStockModel() {
             var pageType = true;
