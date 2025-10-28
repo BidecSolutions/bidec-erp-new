@@ -394,7 +394,7 @@ class ProductController extends Controller
             if ($request->hasFile('product')) {
                 $imagePath = $this->handleFileUpload($request, 'product', $productImageDir);
                 if ($imagePath) {
-                    $productData['product_image'] = 'storage/app/public/' . $imagePath;
+                    $productData['product_image'] = 'storage/' . $imagePath;
                 }
             }
 
