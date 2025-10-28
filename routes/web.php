@@ -287,6 +287,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/update/{id}', 'update')->name('purchase-orders.update');
             Route::get('/show', 'show')->name('payments.show');
             Route::post('/destroy/{id}', 'destroy')->name('purchase-orders.destroy');
+            Route::get('/get-last-purchase-price/{productId}', 'getLastPurchasePrice');
 
         });
     });
