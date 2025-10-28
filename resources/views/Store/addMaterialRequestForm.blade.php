@@ -45,7 +45,7 @@
                                                         <select class="form-control requiredField" name="sub_department_id_1" id="sub_department_id_1">
                                                             <option value="">Select Department</option>
                                                             @foreach($departments as $key => $y)
-                                                                <option value="{{ $y->id}}">{{ $y->department_name}}</option>
+                                                                <option value="{{ $y['id']}}">{{ $y['department_name']}}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>

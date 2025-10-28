@@ -118,28 +118,83 @@ class StoreController extends Controller
     }
 
 
-    public  function addMaterialRequestForm(Request $request)
-    {
-        $jsonFiles = [
-                    'products' => storage_path('app/json_files/products.json'),
-                    'product_variants' => storage_path('app/json_files/product_variants.json'),
-                ];
+    // public  function addMaterialRequestForm(Request $request)
+    // {
+    //     $jsonFiles = [
+    //                 'products' => storage_path('app/json_files/products.json'),
+    //                 'product_variants' => storage_path('app/json_files/product_variants.json'),
+    //             ];
 
-                 foreach ($jsonFiles as $key => $filePath) {
+    //              foreach ($jsonFiles as $key => $filePath) {
+    //         if (!file_exists($filePath)) {
+    //             generate_json($key); // Generate the missing JSON file
+    //         }
+    //     }
+
+    //      $data = array_map(fn($path) => json_decode(file_get_contents($path), true), $jsonFiles);
+    //     ['products' => $products, 'product_variants' => $variants] = $data;
+    // // Attach related data (variants, category names, brand names, and size names) to products
+    //     $products = array_map(function ($product) use ($variants) {
+    //         // Attach variants to each product
+    //         $product['variants'] = array_filter($variants, fn($variant) => $variant['product_id'] == $product['id']);
+
+    //         // Assign category, brand, and size names
+        
+
+    //         // For each variant, assign the size name
+    //         foreach ($product['variants'] as &$variant) {
+    //             $variant['size_name'] = $sizeMap[$variant['size_id']] ?? '-';
+    //         }
+
+    //         return $product;
+    //     }, $products);
+
+
+
+
+    //        ;
+    //     $companyId = Session::get('company_id');
+    //     $locationId = Session::get('company_location_id');
+    //     $departments = DB::select("select * from departments where company_id = " . $companyId . " and company_location_id = ".$locationId."");
+    //     return view('Store.addMaterialRequestForm', compact('departments','products'));
+    // }
+
+    public function addMaterialRequestForm()
+    {
+        // Define file paths for JSON files
+        $jsonFiles = [
+            'products' => storage_path('app/json_files/products.json'),
+            'product_variants' => storage_path('app/json_files/product_variants.json'),
+            'categories' => storage_path('app/json_files/categories.json'),
+            'brands' => storage_path('app/json_files/brands.json'),
+            'sizes' => storage_path('app/json_files/sizes.json'),
+            'departments' => storage_path('app/json_files/departments.json'),
+        ];
+
+        // Ensure all necessary JSON files exist
+        foreach ($jsonFiles as $key => $filePath) {
             if (!file_exists($filePath)) {
                 generate_json($key); // Generate the missing JSON file
             }
         }
 
-         $data = array_map(fn($path) => json_decode(file_get_contents($path), true), $jsonFiles);
-        ['products' => $products, 'product_variants' => $variants] = $data;
-    // Attach related data (variants, category names, brand names, and size names) to products
-        $products = array_map(function ($product) use ($variants) {
+        // Load data from JSON files
+        $data = array_map(fn($path) => json_decode(file_get_contents($path), true), $jsonFiles);
+        ['products' => $products, 'product_variants' => $variants, 'categories' => $categories, 'brands' => $brands, 'sizes' => $sizes, 'departments' => $departments] = $data;
+
+        // Optimize the relationship building by indexing categories, brands, and sizes by their IDs
+        $categoryMap = array_column($categories, 'name', 'id');
+        $brandMap = array_column($brands, 'name', 'id');
+        $sizeMap = array_column($sizes, 'name', 'id');
+
+        // Attach related data (variants, category names, brand names, and size names) to products
+        $products = array_map(function ($product) use ($variants, $categoryMap, $brandMap, $sizeMap) {
             // Attach variants to each product
             $product['variants'] = array_filter($variants, fn($variant) => $variant['product_id'] == $product['id']);
 
             // Assign category, brand, and size names
-        
+            $product['category_name'] = $categoryMap[$product['category_id']] ?? '-';
+            $product['brand_name'] = $brandMap[$product['brand_id']] ?? '-';
 
             // For each variant, assign the size name
             foreach ($product['variants'] as &$variant) {
@@ -149,16 +204,10 @@ class StoreController extends Controller
             return $product;
         }, $products);
 
+        // Apply status filter if provided
+        $products = array_filter($products, fn($product) => $product['status'] == 1);
 
-
-
-           ;
-        $companyId = Session::get('company_id');
-        $locationId = Session::get('company_location_id');
-        $departments = DB::select("select * from departments where company_id = " . $companyId . " and company_location_id = ".$locationId."");
-        $categories = DB::select("select * from categories where company_id = " . $companyId . " and company_location_id = ".$locationId."");
-       
-        return view('Store.addMaterialRequestForm', compact('departments','categories' ,'products'));
+        return view('Store.addMaterialRequestForm', compact('products', 'departments'));
     }
 
     public  function addMaterialRequestFormTwo()

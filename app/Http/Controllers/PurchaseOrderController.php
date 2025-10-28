@@ -498,12 +498,12 @@ class PurchaseOrderController extends Controller
         echo 'Done';
     }
     public function getLastPurchasePrice($productVariantId)
-{
-    $lastPrice = DB::table('purchase_order_datas')
-        ->where('product_variant_id', $productVariantId)
-        ->orderByDesc('id')
-        ->value('unit_price');
+    {
+        $lastPrice = DB::table('purchase_order_datas')
+            ->where('product_variant_id', $productVariantId)
+            ->orderByDesc('id')
+            ->value('unit_price');
 
-    return response()->json(['price' => $lastPrice ?? 0]);
-}
+        return response()->json(['price' => $lastPrice ?? 0]);
+    }
 }

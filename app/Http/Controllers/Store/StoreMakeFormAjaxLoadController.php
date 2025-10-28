@@ -20,7 +20,7 @@ class StoreMakeFormAjaxLoadController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth','MultiDB']);
+        $this->middleware(['auth']);
     }
 
     /**
@@ -31,10 +31,11 @@ class StoreMakeFormAjaxLoadController extends Controller
 
     
 
-    public function addMoreMaterialRequestsDetailRows(){
-        $counter = Input::get('counter');
-        $m = CommonFacades::getSessionCompanyId();
-        $id = Input::get('id');
+    public function addMoreMaterialRequestsDetailRows(Request $request){
+        $counter = $request->input('counter');
+        $companyId = Session::get('company_id');
+        $companyLocationId = Session::get('company_location_id');
+        $id = $request->input('id');
         ?>
         <tr id="removeMaterialRequestsRows_<?php echo $id?>_<?php echo $counter?>">
             <input type="hidden" name="materialRequestDataSection[]" class="form-control requiredField materialRequestDataSection_1" id="materialRequestDataSection_<?php echo $id?>" value="0" />
