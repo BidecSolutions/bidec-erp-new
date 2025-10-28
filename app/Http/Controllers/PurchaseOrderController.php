@@ -497,7 +497,10 @@ class PurchaseOrderController extends Controller
         DB::table('purchase_orders')->where('id', $id)->where('company_id', $companyId)->where('company_location_id', $companyLocationId)->update(['status' => $value]);
         echo 'Done';
     }
-    public function getLastPurchasePrice($productVariantId)
+
+
+
+public function getLastPurchasePrice($productVariantId)
 {
     $lastPrice = DB::table('purchase_order_datas')
         ->where('product_variant_id', $productVariantId)
@@ -506,4 +509,6 @@ class PurchaseOrderController extends Controller
 
     return response()->json(['price' => $lastPrice ?? 0]);
 }
+
+
 }
