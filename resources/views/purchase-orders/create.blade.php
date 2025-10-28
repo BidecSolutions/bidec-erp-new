@@ -99,7 +99,7 @@
                                                         <tr id="row_1">
                                                             <td>
                                                                 <input type="hidden" name="poDataArray[]" id="poDataArray" value="1" />
-                                                                <select name="productId_1" id="productId_1" class="form-control requiredField select2">
+                                                                <select name="productId_1" id="productId_1" class="form-control requiredField select2" onchange="fetchLastPurchasePrice(1)">
                                                                     <option value="">Select Product Detail</option>
                                                                     @foreach($products as $product)
                                                                         <optgroup label="{{ $product['name'] }}">
@@ -172,7 +172,7 @@
                 <tr id="row_${rowCounter}">
                     <td>
                         <input type="hidden" name="poDataArray[]" id="poDataArray" value="${rowCounter}" />
-                        <select name="productId_${rowCounter}" id="productId_${rowCounter}" class="form-control requiredField  new-select2">
+                        <select name="productId_${rowCounter}" id="productId_${rowCounter}" class="form-control requiredField  new-select2" onchange="fetchLastPurchasePrice('${rowCounter}')">
                             <option value="">Select Product Detail</option>
                             @foreach($products as $product)
                                 <optgroup label="{{ $product['name'] }}">
@@ -248,27 +248,49 @@ $('form').on('submit', function (e) {
 });
 
 
-$('body').on('change', '.product-select', function () {
-    let productId = $(this).val();
-    let row = $(this).closest('tr');
+function fetchLastPurchasePrice(id) {
+    const baseUrl = $("#url").val();
+    const productId = $(`#productId_${id}`).val();
 
-    if (productId) {
-        $.ajax({
-            url: '/get-last-purchase-price/' + productId,
-            type: 'GET',
-            success: function (response) {
-                if (response.price) {
-                    row.find('.unit_price').val(response.price);
-                } else {
-                    row.find('.unit_price').val(0);
+    if (!productId) return;
+
+    // ✅ Identify the row properly
+    const row = $(`#productId_${id}`).closest('tr');
+
+    $.ajax({
+        url: `${baseUrl}/purchase-orders/get-last-purchase-price/${productId}`,
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function () {
+            row.find(`#unitPrice_${id}`).val('...');
+        },
+        success: function (response) {
+            // ✅ Parse if returned as string
+            if (typeof response === 'string') {
+                try {
+                    response = JSON.parse(response);
+                } catch (e) {
+                    console.error('JSON parse error:', e);
+                    response = {};
                 }
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
             }
-        });
-    }
-});
+
+            // ✅ Handle valid response
+            if (response && response.price !== undefined && response.price !== null) {
+                const price = parseFloat(response.price);
+                row.find(`#unitPrice_${id}`).val(isNaN(price) ? 0 : price.toFixed(2));
+            } else {
+                row.find(`#unitPrice_${id}`).val(0);
+                alert("⚠️ No purchase rate found for this product.");
+            }
+        },
+        error: function (xhr) {
+            console.error('Error fetching purchase price:', xhr.responseText);
+            alert("❌ Error fetching purchase price. Please try again.");
+            row.find(`#unitPrice_${id}`).val(0);
+        }
+    });
+}
 
 
     </script>
