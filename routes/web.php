@@ -292,9 +292,12 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
+
     Route::post('/purchase-orders/approvePurchaseOrderVoucher', [PurchaseOrderController::class, 'approvePurchaseOrderVoucher']);
     Route::post('/purchase-orders/purchaseOrderVoucherRejectAndRepost', [PurchaseOrderController::class, 'purchaseOrderVoucherRejectAndRepost']);
     Route::post('/purchase-orders/purchaseOrderVoucherActiveAndInactive', [PurchaseOrderController::class, 'purchaseOrderVoucherActiveAndInactive']);
+
+
 
 
     Route::controller(TransferNoteController::class)->group(function () {
