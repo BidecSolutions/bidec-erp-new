@@ -47,10 +47,7 @@
                                 <th>Supplier</th>
                                 <td>{{ $purchaseOrder->supplier ?? 'No supplier specified' }}</td>
                             </tr>
-                            <tr>
-                                <th>Delivery Place</th>
-                                <td>{{ $purchaseOrder->delivery_place }}</td>
-                            </tr>
+                        
                         </tbody>
                     </table>
                 </div>

@@ -65,7 +65,7 @@
                                     <th class="text-center">S.No</th>
                                     <th class="text-center">P.O. No</th>
                                     <th class="text-center">P.O. Date</th>
-                                    <th class="text-center">Delivery Place</th>
+                                    <!-- <th class="text-center">Delivery Place</th> -->
                                     <th class="text-center">Invoice Quotation No</th>
                                     <th class="text-center">Quotation Date</th>
                                     <th class="text-center">Supplier Name</th>

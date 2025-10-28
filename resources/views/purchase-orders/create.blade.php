@@ -27,11 +27,11 @@
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <input type="date" class="form-control requiredField" name="po_date" id="po_date" value="{{date('Y-m-d')}}" />
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                        <!-- <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Delivery place</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <input type="text" class="form-control" name="delivery_place" id="delivery_place" placeholder="Delivery Place" value="Factory" />
-                                        </div>
+                                        </div> -->
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Invoice/Quotation No.</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>
@@ -218,5 +218,61 @@
             // Set the value of the subTotal field
             document.getElementById('subTotal_'+rowId+'').value = subTotal.toFixed(2); // rounded to 2 decimal places
         }
+        // ✅ Prevent duplicate product variants before form submit
+$('form').on('submit', function (e) {
+    const selectedProducts = [];
+    let hasDuplicate = false;
+
+    // Loop through all product dropdowns
+    $('select[name^="productId_"]').each(function () {
+        const value = $(this).val();
+        if (value) {
+            if (selectedProducts.includes(value)) {
+                hasDuplicate = true;
+                return false; // stop the loop
+            }
+            selectedProducts.push(value);
+        }
+    });
+
+    // If duplicate found → show error and prevent submit
+    if (hasDuplicate) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'error',
+            title: 'Duplicate Product',
+            text: 'A product cannot be added more than once in the same Purchase Order.',
+            confirmButtonColor: '#d33'
+        });
+    }
+});
+
+
+$('body').on('change', '.product-select', function () {
+    let productId = $(this).val();
+    let row = $(this).closest('tr');
+
+    if (productId) {
+        $.ajax({
+            url: '/get-last-purchase-price/' + productId,
+            type: 'GET',
+            success: function (response) {
+                if (response.price) {
+                    row.find('.unit_price').val(response.price);
+                } else {
+                    row.find('.unit_price').val(0);
+                }
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+});
+
+
     </script>
+    
 @endsection
+
+
