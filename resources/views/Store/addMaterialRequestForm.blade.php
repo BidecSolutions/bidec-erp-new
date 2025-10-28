@@ -37,7 +37,7 @@
                                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                                         <label class="sf-label">Material Request Date.</label>
                                                         <span class="rflabelsteric"><strong>*</strong></span>
-                                                        <input type="text" class="form-control requiredField fromDateDatePicker" readonly name="material_request_date_1" id="material_request_date_1" value="<?php echo $formDateValue ?>" />
+                                                        <input type="date" class="form-control requiredField fromDateDatePicker"  name="material_request_date_1" id="material_request_date_1" value="<?php echo $formDateValue ?>" />
                                                     </div>
                                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                                                         <label class="sf-label">Requested Department / Sub Department</label>
@@ -71,8 +71,7 @@
                                                                 <table id="buildyourform" class="table table-bordered">
                                                                     <thead>
                                                                     <tr>
-                                                                        <th class="text-center col-sm-3">Category <span class="rflabelsteric"><strong>*</strong></span></th>
-                                                                        <th class="text-center col-sm-3">Sub Item <span class="rflabelsteric"><strong>*</strong></span></th>
+                                                                        <th class="text-center col-sm-3">Product/Variant <span class="rflabelsteric"><strong>*</strong></span></th>
                                                                         <th class="text-center" style="width:150px;">Qty in Unit <span class="rflabelsteric"><strong>*</strong></span></th>
                                                                         <th class="text-center" style="width:150px;">Description</th>
                                                                         <th class="text-center" style="width:100px;">Action</th>
@@ -82,15 +81,18 @@
                                                                     <input type="hidden" name="materialRequestDataSection[]" class="form-control requiredField materialRequestDataSection_1" id="materialRequestDataSection_1" value="1" />
                                                                     <tr>
                                                                         <td>
-                                                                            <select name="category_id[]" id="category_id_1_1" onchange="subItemListLoadDepandentCategoryId(this.id,this.value)" class="form-control requiredField">
-                                                                                @foreach($departments as $key => $y)
-                                                                                    <option value="{{ $y->id}}">{{ $y->department_name}}</option>
+                                                                  <select name="product_id" id="product_id" class="form-control requiredField select2">
+                                                                        <option value="">Select Product</option>
+                                                                        @foreach($products as $product)
+                                                                            <optgroup label="{{ $product['name'] }}">
+                                                                                @foreach($product['variants'] as $variant)
+                                                                                    <option value="{{ $variant['id'] }}">
+                                                                                        {{ $variant['size_name'] }} - {{ number_format($variant['amount'], 2) }}
+                                                                                    </option>
                                                                                 @endforeach
-                                                                            </select>
-                                                                        </td>
-                                                                        <td>
-                                                                            <select name="sub_item_id[]" id="sub_item_id_1_1" class="form-control requiredField">
-                                                                            </select>
+                                                                            </optgroup>
+                                                                        @endforeach
+                                                                    </select>
                                                                         </td>
                                                                         <td>
                                                                             <input type="number" name="qty[]" id="qty_1_1" step="0.0001" class="form-control requiredField" />

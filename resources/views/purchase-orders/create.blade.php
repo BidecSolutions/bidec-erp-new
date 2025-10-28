@@ -290,6 +290,7 @@ function fetchLastPurchasePrice(id) {
             if (response && response.price !== undefined && response.price !== null) {
                 const price = parseFloat(response.price);
                 row.find(`#unitPrice_${id}`).val(isNaN(price) ? 0 : price.toFixed(2));
+                calculateSubtotal(id);
             } else {
                 row.find(`#unitPrice_${id}`).val(0);
                 alert("⚠️ No purchase rate found for this product.");
@@ -301,6 +302,7 @@ function fetchLastPurchasePrice(id) {
             row.find(`#unitPrice_${id}`).val(0);
         }
     });
+    calculateSubtotal(id);
 }
 
 
