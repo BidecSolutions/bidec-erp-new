@@ -49,6 +49,7 @@ use App\Http\Controllers\{
     PurchaseInvoiceController,
     SaleInvoiceController
 };
+
 //use GPBMetadata\Google\Api\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -638,3 +639,4 @@ Route::middleware(['auth'])->group(function () {
 
 
 include 'module/users.php';
+include 'module/store.php';

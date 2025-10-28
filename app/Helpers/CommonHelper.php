@@ -653,6 +653,38 @@ class CommonHelper
         <?php }
     }
 
+    public static function checkUserPermissionForSingleOption($param1,$param2,$param3,$param4,$param5,$param6,$param7){
+        if ($param7 == 'user') {
+            if($param4 == 'add'){
+                $columnName = 'right_add';
+            }else if($param4 == 'viewlist'){
+                $columnName = 'right_viewlist';
+            }else if($param4 == 'edit'){
+                $columnName = 'right_edit';
+            }else if($param4 == 'viewsingle'){
+                $columnName = 'right_viewsingle';
+            }
+			else if($param4 == 'delete'){
+                $columnName = 'right_delete';
+            }
+			else if($param4 == 'repost'){
+                $columnName = 'right_repost';
+            }
+            $menuDetail = DB::Connection('mysql')->table('role_detail')
+                ->where('company_id', '=', $param1)
+                ->where('user_id', '=', $param2)
+                ->where('menu_id', '=', $param5)
+                ->first();
+            if(empty($menuDetail)){
+                return $menuDetail;
+            }else {
+                return $menuDetail->$columnName;
+            }
+        }else{
+            return '1';
+        }
+    }
+
     public static function displayExportButton($param1, $param2, $param3)
     {
         ?>

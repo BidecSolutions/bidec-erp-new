@@ -190,6 +190,9 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'CommonFacades' => App\Facades\CommonFacades::class,
         'GoogleTranslate' => Stichoza\GoogleTranslate\GoogleTranslate::class,
+        'StoreFacades'    => App\Helpers\StoreFacades::class,
+        'SelectListFacades'    => App\Helpers\SelectListFacades::class,
+        'PurchaseFacades'    => App\Helpers\PurchaseFacades::class,
     ])->toArray(),
 
 ];
