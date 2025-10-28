@@ -92,11 +92,12 @@ class PurchaseOrderController extends Controller
 
     public function store(Request $request)
     {
+       
         try {
             $validatedData = $request->validate([
                 'po_date' => 'required|date',
-                'delivery_place' => 'required|string|max:255',
-                'quotation_no' => 'required|string|max:255',
+                // 'delivery_place' => 'required|string|max:255',
+                'quotation_no' => 'nullable|string|max:255',
                 'quotation_date' => 'required|date',
                 'main_description' => 'nullable|string|max:255',
                 'paymentType' => 'required|integer',
@@ -123,11 +124,12 @@ class PurchaseOrderController extends Controller
         DB::beginTransaction();
 
         try {
+            //  dd($request);
             // Insert data into PurchaseOrder
             $purchaseOrder = new PurchaseOrder();
             $purchaseOrder->po_no = PurchaseOrder::VoucherNo();
             $purchaseOrder->po_date = $request->po_date;
-            $purchaseOrder->delivery_place = $request->delivery_place;
+            // $purchaseOrder->delivery_place = $request->delivery_place;
             $purchaseOrder->invoice_quotation_no = $request->quotation_no;
             $purchaseOrder->quotation_date = $request->quotation_date;
             $purchaseOrder->main_description = $request->main_description;
@@ -148,6 +150,7 @@ class PurchaseOrderController extends Controller
                 $purchaseOrderData->unit_price = $request->input('unitPrice_' . $index);
                 $purchaseOrderData->sub_total = $request->input('subTotal_' . $index);
                 $purchaseOrderData->save();
+                // dd($purchaseOrderData);
             }
 
             //Commit transaction
@@ -240,7 +243,7 @@ class PurchaseOrderController extends Controller
         try {
             $validatedData = $request->validate([
                 'po_date' => 'required|date',
-                'delivery_place' => 'required|string|max:255',
+                // 'delivery_place' => 'required|string|max:255',
                 'quotation_no' => 'nullable|string|max:255',
                 'quotation_date' => 'required|date',
                 'main_description' => 'nullable|string',
@@ -270,7 +273,7 @@ class PurchaseOrderController extends Controller
             $purchaseOrder = PurchaseOrder::findOrFail($id);
             // Update PurchaseOrder details
             $purchaseOrder->po_date = $request->po_date;
-            $purchaseOrder->delivery_place = $request->delivery_place;
+            // $purchaseOrder->delivery_place = $request->delivery_place;
             $purchaseOrder->invoice_quotation_no = $request->quotation_no;
             $purchaseOrder->quotation_date = $request->quotation_date;
             $purchaseOrder->main_description = $request->main_description;
@@ -391,7 +394,7 @@ class PurchaseOrderController extends Controller
                     'po.company_location_id',
                     'po.po_no',
                     'po.po_date',
-                    'po.delivery_place',
+                    // 'po.delivery_place',
                     'po.invoice_quotation_no',
                     'po.quotation_date',
                     'po.main_description',
@@ -485,4 +488,10 @@ class PurchaseOrderController extends Controller
         DB::table('purchase_orders')->where('id', $id)->where('company_id', $companyId)->where('company_location_id', $companyLocationId)->update(['status' => $value]);
         echo 'Done';
     }
+
+
+
+
+
+
 }

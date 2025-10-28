@@ -63,7 +63,7 @@
         </td>
     </tr>
 @endforeach -->
-@php
+<!-- @php
     $counter = 1;
 @endphp
 @foreach($chartOfAccounts as $key => $dRow)
@@ -239,4 +239,60 @@ $(document).on('click', '#active-record', function(e) {
 <script>
     showAlert('error', "{{ session('error') }}");
 </script>
-@endif
+@endif -->
+@php $counter = 1; @endphp
+@foreach($chartOfAccounts as $key => $dRow)
+    @php
+        $array = explode('-', $dRow->code);
+        $level = count($array);
+        $rowColor = $dRow->status != 1 ? 'danger' : '';
+    @endphp
+
+    <tr class="{{ $rowColor }}">
+        <td class="text-center">{{ $counter++ }}</td>
+        <td>{{ $dRow->code }}</td>
+        <td>
+            @for($i = 1; $i < $level; $i++)
+                &emsp;&emsp;
+            @endfor
+            {{ $dRow->name }}
+        </td>
+        <td>
+            {{ $dRow->parent->name ?? '-' }}
+        </td>
+        <td>
+            @if($dRow->coa_type == 1)
+                <span class="badge bg-success">Normal Chart of Account</span>
+            @else
+                <span class="badge bg-primary">Related Master Table</span>
+            @endif
+        </td>
+     <td class="text-center">
+    @if($dRow->coa_type == 1)
+        {{-- Edit Button --}}
+        <a href="{{ route('chartofaccounts.edit', $dRow->id) }}" 
+           class="btn btn-sm btn-primary" 
+           title="Edit">
+            <i class="fa fa-edit"></i>
+        </a>
+
+        {{-- Status Toggle Switch --}}
+        <label class="switch">
+            @php
+                $toggleUrl = $dRow->status == 1
+                    ? route('chartofaccounts.status', $dRow->id)
+                    : route('chartofaccounts.activeStatus', $dRow->id);
+                $toggleId = $dRow->status == 1 ? 'inactive-record' : 'active-record';
+            @endphp
+
+            <input type="checkbox" id="{{ $toggleId }}" 
+                data-url="{{ $toggleUrl }}" 
+                data-id="{{ $dRow->id }}" 
+                {{ $dRow->status == 1 ? 'checked' : '' }}>
+            <span class="slider round"></span>
+        </label>
+    @endif
+</td>
+
+    </tr>
+@endforeach

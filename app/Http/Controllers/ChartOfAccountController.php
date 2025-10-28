@@ -48,7 +48,10 @@ class ChartOfAccountController extends Controller
         ]);
         $this->chartOfAccountRepository->storeChartOfAccount($data);
 
-        return redirect()->route('chartofaccounts.index')->with('message', 'Chart Of Account Created Successfully');
+       return redirect()
+    ->route('chartofaccounts.index')
+    ->with('success', 'Chart Of Account Created Successfully');
+
     }
 
     /**
@@ -97,7 +100,10 @@ class ChartOfAccountController extends Controller
         // Delegate to repository method with condition
         $this->chartOfAccountRepository->updateChartOfAccount($data, $id, $onlyUpdateName);
 
-        return redirect()->route('chartofaccounts.index')->with('message', 'Chart Of Account Updated Successfully');
+       return redirect()
+    ->route('chartofaccounts.index')
+    ->with('success', 'Chart Of Account Updated Successfully');
+
     }
 
 
@@ -120,6 +126,6 @@ class ChartOfAccountController extends Controller
 
         $chartOfAccount->status = 1;
         $chartOfAccount->save();
-        return response()->json(['success' => 'Inactive Successfully!']);
+        return response()->json(['success' => 'Active Successfully!']);
     }
 }

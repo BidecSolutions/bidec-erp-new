@@ -27,13 +27,13 @@
                                             <input type="date" value="{{ old('po_date', $purchaseOrder->po_date) }}"
                                                 class="form-control requiredField" name="po_date" id="po_date" />
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                        <!-- <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Delivery Place</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <input type="text"
                                                 value="{{ old('delivery_place', $purchaseOrder->delivery_place) }}"
                                                 class="form-control" name="delivery_place" id="delivery_place" />
-                                        </div>
+                                        </div> -->
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Invoice/Quotation No.</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>

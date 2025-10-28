@@ -1,4 +1,4 @@
-@php
+<!-- @php
     use App\Helpers\CommonHelper;
 @endphp
 @extends('layouts.layouts')
@@ -14,6 +14,19 @@
             </div>
         </div>
         <div class="row">
+
+           {{-- Validation Errors --}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>There were some problems with your input:</strong>
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
             <form method="POST" action="{{ route('purchase-orders.store') }}">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     @csrf
@@ -27,11 +40,7 @@
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <input type="date" class="form-control requiredField" name="po_date" id="po_date" value="{{date('Y-m-d')}}" />
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                                            <label class="sf-label">Delivery place</label>
-                                            <span class="rflabelsteric"><strong>*</strong></span>
-                                            <input type="text" class="form-control" name="delivery_place" id="delivery_place" placeholder="Delivery Place" value="Factory" />
-                                        </div>
+                            
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Invoice/Quotation No.</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>
@@ -42,13 +51,14 @@
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <input type="date" class="form-control requiredField" name="quotation_date" id="quotation_date" value="{{date('Y-m-d')}}" />
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                       <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Remarks</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <textarea name="main_description" id="main_description" rows="2" cols="50" style="resize:none;" class="form-control">-</textarea>
                                         </div>
+                                    </div>
+                                    <div class="row">
+                                       
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                             <label class="sf-label">Payment Type</label>
                                             <select class="form-control" name="paymentTypeTwo" id="paymentTypeTwo" onchange="touglePurchaseOrderPaymentRate()">
@@ -145,7 +155,7 @@
                         </div>
                     </div>
                 </div>
-            </form 
+</form> 
         </div>
     </div>
 </div>
@@ -218,5 +228,38 @@
             // Set the value of the subTotal field
             document.getElementById('subTotal_'+rowId+'').value = subTotal.toFixed(2); // rounded to 2 decimal places
         }
+
+$('form').on('submit', function (e) {
+    const selectedProducts = [];
+    let hasDuplicate = false;
+
+    // Loop through all product dropdowns
+    $('select[name^="productId_"]').each(function () {
+        const value = $(this).val();
+        if (value) {
+            if (selectedProducts.includes(value)) {
+                hasDuplicate = true;
+                return false; 
+            }
+            selectedProducts.push(value);
+        }
+    });
+
+  
+    if (hasDuplicate) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'error',
+            title: 'Duplicate Product',
+            text: 'A product cannot be added more than once in the same Purchase Order.',
+            confirmButtonColor: '#d33'
+        });
+    }
+});
+
+
+
+
     </script>
-@endsection
+    
+@endsection -->
