@@ -55,7 +55,7 @@
             <button class="btn btn-xs dropdown-toggle theme-btn" type="button" data-toggle="dropdown">Action  <span class="caret"></span></button>
             <ul class="dropdown-menu">
                 @if($dRow['status'] == 1)
-                    <!-- <li><a href="{{ route('products.edit', $dRow['id']) }}">Edit</a></li> -->
+                    <li><a href="{{ route('products.edit', $dRow['id']) }}">Edit</a></li>
                 @endif
             </ul>
         </div>

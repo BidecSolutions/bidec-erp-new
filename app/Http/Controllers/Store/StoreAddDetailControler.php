@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Store;
 use App\Http\Controllers\Controller;
 
-use App\Http\Requests;
 use App\Models\Account;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderData;
 use App\Models\SubDepartment;
 use App\Models\Supplier;
 use App\PurchaseOrderExpenseData;
-use Illuminate\Http\Request;
 use Input;
 use Auth;
 use DB;
@@ -19,7 +17,9 @@ use Redirect;
 use Session;
 use StoreFacades;
 use CommonFacades;
+use App\Helpers\CommonHelper;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Request;
 
 class StoreAddDetailControler extends Controller
 {
@@ -30,7 +30,7 @@ class StoreAddDetailControler extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth','MultiDB']);
+        $this->middleware(['auth']);
 
     }
 
@@ -40,38 +40,41 @@ class StoreAddDetailControler extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function addMaterialRequestDetail(){
-        // dd(Input::all());
+    public function addMaterialRequestDetail(request $request){
+
         date_default_timezone_set("Asia/Karachi");
-        $m = CommonFacades::getSessionCompanyId();
+        $companyId = Session::get('company_id');
+        $companyLocationId = Session::get('company_location_id');
         try{
-            $materialRequestsSection = Input::get('materialRequestsSection');
+
+          $materialRequestsSection = request('materialRequestsSection');
             foreach ($materialRequestsSection as $row) {
-                $DepartmentAndSubDepartmentDetail = explode('<*>',Input::get('sub_department_id_' . $row . ''));
-                $material_request_date = strip_tags(date("Y-m-d", strtotime(Input::get('material_request_date_' . $row . ''))));
-                $description = strip_tags(Input::get('description_' . $row . ''));
+                $DepartmentAndSubDepartmentDetail = explode('<*>',request('sub_department_id_' . $row . ''));
+                $material_request_date = strip_tags(date("Y-m-d", strtotime(request('material_request_date_' . $row . ''))));
+                $description = strip_tags(request('description_' . $row . ''));
                 $sub_department_id = strip_tags($DepartmentAndSubDepartmentDetail[0]);
-                $departmentId = $DepartmentAndSubDepartmentDetail[1];
-                $location_id = strip_tags(Input::get('location_id_'.$row.''));
-                $projectId = strip_tags(Input::get('project_id_'.$row.''));
-                $recipeId = strip_tags(Input::get('recipe_id'));
-                $productionProcessId = Input::get('productionProcessId');
-                $no_of_qty = strip_tags(Input::get('no_of_qty_'.$row.''));
-                $materialRequestDataSection = Input::get('materialRequestDataSection');
-                // dd($materialRequestDataSection);
+                $departmentId = $DepartmentAndSubDepartmentDetail[0];
+                // $location_id = strip_tags(request('location_id_'.$row.''));
+                $projectId = strip_tags(request('project_id_'.$row.''));
+              
+                $recipeId = strip_tags(request('recipe_id'));
+                $productionProcessId = request('productionProcessId');
+
+                $no_of_qty = strip_tags(request('no_of_qty_'.$row.''));
+                $materialRequestDataSection = request('materialRequestDataSection');
                 $str = DB::selectOne("select max(convert(substr(`material_request_no`,3,length(substr(`material_request_no`,3))-4),signed integer)) reg from `material_request` where substr(`material_request_no`,-4,2) = " . date('m') . " and substr(`material_request_no`,-2,2) = " . date('y') . "")->reg;
                 $material_request_no = 'MR' . ($str + 1) . date('my');
+
 
                 $data1['material_request_no'] = $material_request_no;
                 $data1['material_request_date'] = $material_request_date;
                 $data1['description'] = $description;
                 $data1['department_id'] = $departmentId;
                 $data1['sub_department_id'] = $sub_department_id;
-                $data1['project_id'] = $projectId;
-                $data1['location_id'] = $location_id;
-                $data1['recipe_id'] = $recipeId;
-                $data1['productionProcessId'] = $productionProcessId;
-                $data1['no_of_qty'] = $no_of_qty;
+                $data1['project_id'] = request('project_id') ?: null;
+                $data1['recipe_id'] = request('recipe_id') ?: null;
+                $data1['productionProcessId'] = request('productionProcessId') ?: null;
+                $data1['no_of_qty'] = request('no_of_qty_'.$row.'') ?: 0;
                 $data1['date'] = date("Y-m-d");
                 $data1['time'] = date("H:i:s");
                 $data1['user_id'] = Auth::user()->id;
@@ -82,26 +85,28 @@ class StoreAddDetailControler extends Controller
                 $data1['approve_date'] = date("Y-m-d");
                 $data1['approve_time'] = date("H:i:s");
                 $data1['approve_user_id'] = Auth::user()->id;
-                $data1['company_id'] = $m;
-                $data1['accounting_year']     	 = Session::get('accountYear');
+                $data1['company_id'] = $companyId;
+                $data1['location_id'] = $companyLocationId;
+                $data1['accounting_year'] = Session::get('accountYear') ?: date('Y');
+            
+       
+                
 
                 DB::table('material_request')->insert($data1);
                 foreach ($materialRequestDataSection as $key => $row2) {
-                    // $category_id = strip_tags(Input::get('category_id_' . $row . '_' . $row2 . ''));
-                    $category_id = Input::get('category_id');
-                    // $sub_item_id = strip_tags(Input::get('sub_item_id_' . $row . '_' . $row2 . ''));
-                    $sub_item_id = Input::get('sub_item_id');
-                    // $qty = strip_tags(Input::get('qty_' . $row . '_' . $row2 . ''));
-                    $qty = Input::get('qty');
-                    // $subDescription = strip_tags(Input::get('sub_description_' . $row . '_' . $row2 . ''));
-                    $subDescription = Input::get('sub_description');
+                    // $category_id = strip_tags(request('category_id_' . $row . '_' . $row2 . ''));
+                    $product_id = request('product_id');
+                    // $sub_item_id = strip_tags(request('sub_item_id_' . $row . '_' . $row2 . ''));
+                    // $qty = strip_tags(request('qty_' . $row . '_' . $row2 . ''));
+                    $qty = request('qty');
+                    // $subDescription = strip_tags(request('sub_description_' . $row . '_' . $row2 . ''));
+                    $subDescription = request('sub_description');
                     
                     // dd($category_id,$sub_item_id,$qty,$subDescription);
 
                     $data2['material_request_no'] = $material_request_no;
                     $data2['material_request_date'] = $material_request_date;
-                    $data2['category_id'] = $category_id[$key];
-                    $data2['sub_item_id'] = $sub_item_id[$key];
+                    $data2['product_id'] = $product_id[$key];
                     $data2['required_date'] = date("Y-m-d");
                     $data2['qty'] = $qty[$key];
                     $data2['sub_description'] = $subDescription[$key];
@@ -113,16 +118,14 @@ class StoreAddDetailControler extends Controller
                     $data2['status'] = 1;
                     $data2['material_request_status'] = 2;
                     $data2['approve_username'] = Auth::user()->name;
-                    $data2['company_id'] = $m;
-                    $data2['accounting_year']     	 = Session::get('accountYear');
-
+                    $data2['company_id'] = $companyId;
+                    $data2['accounting_year'] = Session::get('accountYear') ?: date('Y');
                     DB::table('material_request_data')->insert($data2);
 
                 }
             }
             $msg = 'Add New Material Request. Material Request No => '.$material_request_no.' and Material Request Date => '.$material_request_date. ' created by '.Auth::user()->name;
-            CommonFacades::addEmailNotificationDetailOptionWise($m,'material_request_notification_setting',1,$location_id,'Material Request','Add Material Request',$msg,'');
-            return redirect()->to('store/viewMaterialRequestList?pageType='.Input::get('pageType').'&&parentCode='.Input::get('parentCode').'#SFR')->with('success','Add Material Request Successfully!');
+            return redirect()->to('store/viewMaterialRequestList?pageType='.request('pageType').'&&parentCode='.request('parentCode').'#SFR')->with('success','Add Material Request Successfully!');
         }catch (\Exception $e) {
             return redirect()->back()->with('error','Oops! There might be a issue '. $e->getMessage());
         }
@@ -898,9 +901,8 @@ class StoreAddDetailControler extends Controller
                     }
                 }
                 $msg = 'Add New Purchase Order. Purchase Request No => '.$prNo.' and Purchase Order No => '.$purchaseOrderNo.' and Purchase Order Date => '.$po_date. ' created by '.Auth::user()->name;
-                CommonFacades::addEmailNotificationDetailOptionWise($m,'purchase_order_notification_setting',1,$locationId,'Purcahse Order','Add Purcahse Order',$msg,$initialEmailAddress);
             }
-            return redirect()->to('store/viewPurchaseOrderList?pageType='.Input::get('pageType').'&&parentCode='.Input::get('parentCode').'#SFR')->with('success','Add Purchase Order Successfully!');
+            return redirect()->to('store/viewPurchaseOrderList?pageType='.request('pageType').'&&parentCode='.request('parentCode').'#SFR')->with('success','Add Purchase Order Successfully!');
         }catch (\Exception $e) {
             dd($e->getMessage(), $e->getTraceAsString());
             return redirect()->back()->with('error','Oops! There might be a issue '. $e->getMessage());
