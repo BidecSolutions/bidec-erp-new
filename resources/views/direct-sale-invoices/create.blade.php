@@ -95,10 +95,10 @@
                                                             </select>
                                                         </td>
                                                         <td>
-                                                            <input type="number" name="qty_1" id="qty_1" class="form-control" oninput="calculateSubtotal(1)" />
+                                                            <input type="number" name="qty_1" id="qty_1" class="form-control" onchange="calculateSubtotal(1)" />
                                                         </td>
                                                         <td>
-                                                            <input type="number" name="unitPrice_1" id="unitPrice_1" class="form-control" oninput="calculateSubtotal(1)" />
+                                                            <input type="number" name="unitPrice_1" id="unitPrice_1" class="form-control" onchange="calculateSubtotal(1)" />
                                                         </td>
                                                         <td>
                                                             <input type="number" name="subTotal_1" id="subTotal_1" class="form-control" readonly />
@@ -131,15 +131,16 @@
                                                             <select name="tax_account_id" id="tax_account_id" onchange="toggleTaxAmount()" class="form-control select2">
                                                                 <option value="">Select Tax Account</option>
                                                                 @foreach($tax_accounts as $ta)
-                                                                    <option value="{{$ta['acc_id']}}">{{$ta['name']}}</option>
+                                                                    <option value="{{$ta['acc_id']}}" data-tax-percent="{{$ta['percent_value']}}">
+                                                                        {{$ta['name']}}
+                                                                    </option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
                                                         <div class="col-lg-6">
                                                             <label>Tax Amount</label>
-                                                            <input type="number" name="tax_amount" id="tax_amount" disabled class="form-control" value="0" oninput="calculateTotal()" />
+                                                            <input type="number" name="tax_amount" id="tax_amount" readonly class="form-control" value="0" oninput="calculateTotal()" />
                                                         </div>
-                                                        
                                                     </div>
                                                     <div class="row mt-2">
                                                         <div class="col-lg-12">
@@ -193,18 +194,29 @@
 @section('script')
 <script>
     function toggleTaxAmount() {
-        let taxAccount = document.getElementById("tax_account_id").value;
+        let taxAccountSelect = document.getElementById("tax_account_id");
+        let selectedOption = taxAccountSelect.options[taxAccountSelect.selectedIndex];
+
         let taxAmountField = document.getElementById("tax_amount");
-        var totalAmount = $('#total_amount').val();
+        var totalAmount = parseFloat($('#total_amount').val()) || 0;
 
-        if (taxAccount) {
+        if (selectedOption.value) {
+            let taxPercent = parseFloat(selectedOption.getAttribute("data-tax-percent")) || 0;
+            
+            // Calculate Tax Amount (Total Amount * Tax Percent / 100)
+            let taxAmount = (totalAmount * taxPercent) / 100;
+            taxAmountField.value = taxAmount.toFixed(2);  // Set the tax amount
+
+            // Enable the tax amount field to show the calculated value
             taxAmountField.removeAttribute("readonly");
-        } else {
 
-            taxAmountField.value = 0; // reset value
-            $('#net_amount').val(totalAmount);
+        } else {
+            taxAmountField.value = 0; // Reset value if no tax account is selected
+            $('#net_amount').val(totalAmount);  // Update Net Amount to Total Amount
             taxAmountField.setAttribute("readonly", "readonly");
         }
+
+        calculateTotal();  // Recalculate the total including tax
     }
     function tougleDirectSaleInvoicePaymentRate(){
         var paymentTypeTwo = $('#paymentTypeTwo').val();
@@ -239,8 +251,8 @@
                         @endforeach
                     </select>
                 </td>
-                <td><input type="number" name="qty_${rowCounter}" id="qty_${rowCounter}" class="form-control" oninput="calculateSubtotal(${rowCounter})" /></td>
-                <td><input type="number" name="unitPrice_${rowCounter}" id="unitPrice_${rowCounter}" class="form-control" oninput="calculateSubtotal(${rowCounter})" /></td>
+                <td><input type="number" name="qty_${rowCounter}" id="qty_${rowCounter}" class="form-control" onchange="calculateSubtotal(${rowCounter})" /></td>
+                <td><input type="number" name="unitPrice_${rowCounter}" id="unitPrice_${rowCounter}" class="form-control" onchange="calculateSubtotal(${rowCounter})" /></td>
                 <td><input type="number" name="subTotal_${rowCounter}" id="subTotal_${rowCounter}" class="form-control" readonly /></td>
                 <td><input type="number" name="averagePurchaseRate_${rowCounter}" id="averagePurchaseRate_${rowCounter}" class="form-control" readonly /></td>
                 <td><input type="number" name="averagePurchaseAmount_${rowCounter}" id="averagePurchaseAmount_${rowCounter}" class="form-control" readonly /></td>
@@ -259,11 +271,22 @@
         var qty = parseFloat($(`#qty_${rowId}`).val()) || 0;
         var unitPrice = parseFloat($(`#unitPrice_${rowId}`).val()) || 0;
         var avgPurRate = parseFloat($(`#averagePurchaseRate_${rowId}`).val()) || 0;
+
+        // Validate that the unit price is not lower than the average purchase rate
+        if (unitPrice < avgPurRate && unitPrice !== 0) {
+            alert("Unit Price cannot be less than the Average Purchase Rate.");
+            $(`#unitPrice_${rowId}`).val(avgPurRate.toFixed(2)); // Reset to the average purchase rate
+            return;
+        }
+
         var subTotal = qty * unitPrice;
         var avgPurAmount = qty * avgPurRate;
+
         $(`#subTotal_${rowId}`).val(subTotal.toFixed(2));
         $(`#averagePurchaseAmount_${rowId}`).val(avgPurAmount.toFixed(2));
+
         calculateTotal();
+        toggleTaxAmount();
     }
 
     function calculateTotal() {
