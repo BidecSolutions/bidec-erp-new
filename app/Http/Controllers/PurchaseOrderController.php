@@ -504,10 +504,6 @@ class PurchaseOrderController extends Controller
         ->orderByDesc('id')
         ->value('unit_price');
 
-
-
-
-
-
+    return response()->json(['price' => $lastPrice ?? 0]);
 }
 }
