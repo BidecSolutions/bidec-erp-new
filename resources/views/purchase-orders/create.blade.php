@@ -1,4 +1,4 @@
-<!-- @php
+@php
     use App\Helpers\CommonHelper;
 @endphp
 @extends('layouts.layouts')
@@ -262,4 +262,4 @@ $('form').on('submit', function (e) {
 
     </script>
     
-@endsection -->
+@endsection
