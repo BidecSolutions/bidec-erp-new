@@ -174,7 +174,7 @@
             <tr id="row_${rowCounter}">
                 <td>
                     <input type="hidden" name="poDataArray[]" id="poDataArray" value="${rowCounter}" />
-                    <select name="productId_${rowCounter}" id="productId_${rowCounter}" class="form-control requiredField new-select2">
+                    <select name="productId_${rowCounter}" id="productId_${rowCounter}" class="form-control requiredField new-select2" onchange="fetchLastPurchasePrice(${rowCounter})">
                         <option value="">Select Product Detail</option>
                         @foreach($products as $product)
                             <optgroup label="{{ $product['name'] }}">
