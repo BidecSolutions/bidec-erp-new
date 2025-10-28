@@ -137,7 +137,7 @@
                                                         </div>
                                                         <div class="col-lg-6">
                                                             <label>Tax Amount</label>
-                                                            <input type="number" name="tax_amount" id="tax_amount" disabled class="form-control" value="0" oninput="calculateTotal()" />
+                                                            <input type="number" name="tax_amount" id="tax_amount" readonly class="form-control" value="0" oninput="calculateTotal()" />
                                                         </div>
                                                         
                                                     </div>
@@ -196,7 +196,6 @@
         let taxAccount = document.getElementById("tax_account_id").value;
         let taxAmountField = document.getElementById("tax_amount");
         var totalAmount = $('#total_amount').val();
-
         if (taxAccount) {
             taxAmountField.removeAttribute("readonly");
         } else {
