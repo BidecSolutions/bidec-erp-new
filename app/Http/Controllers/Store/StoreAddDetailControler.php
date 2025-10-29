@@ -71,9 +71,9 @@ class StoreAddDetailControler extends Controller
                 $data1['description'] = $description;
                 $data1['department_id'] = $departmentId;
                 $data1['sub_department_id'] = $sub_department_id;
-                $data1['project_id'] = request('project_id') ?: null;
-                $data1['recipe_id'] = request('recipe_id') ?: null;
-                $data1['productionProcessId'] = request('productionProcessId') ?: null;
+                $data1['project_id'] = request('project_id') ?: 0;
+                $data1['recipe_id'] = request('recipe_id') ?: 0;
+                $data1['productionProcessId'] = request('productionProcessId') ?: 0;
                 $data1['no_of_qty'] = request('no_of_qty_'.$row.'') ?: 0;
                 $data1['date'] = date("Y-m-d");
                 $data1['time'] = date("H:i:s");
@@ -88,6 +88,9 @@ class StoreAddDetailControler extends Controller
                 $data1['company_id'] = $companyId;
                 $data1['location_id'] = $companyLocationId;
                 $data1['accounting_year'] = Session::get('accountYear') ?: date('Y');
+                $data1['required_date'] = date('Y-m-d');
+                $data1['additional_remarks'] = $description;
+                $data1['delete_username'] = '-';
             
        
                 

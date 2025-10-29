@@ -16,33 +16,27 @@ return new class extends Migration
             $table->integer('accounting_year');
             $table->integer('company_id');
             $table->integer('location_id');
-            $table->integer('project_id');
-            $table->integer('productionProcessId')->default(0);
-            $table->integer('recipe_id')->default(1);
             $table->decimal('no_of_qty', 15, 3)->default(0.000);
             $table->string('material_request_no', 150);
             $table->date('material_request_date');
-            $table->date('required_date');
             $table->integer('department_id');
-            $table->integer('sub_department_id');
             $table->text('description');
             $table->integer('material_request_status')
                 ->default(1)
                 ->comment('1 = Pending, 2 = Approve, 3 = Rejected');
-            $table->string('additional_remarks', 255);
             $table->integer('status');
             $table->date('date');
             $table->string('time', 20);
             $table->string('username', 200);
             $table->integer('user_id');
-            $table->string('approve_username', 200);
+            $table->string('approve_username', 200)->nullable();
             $table->date('approve_date')->nullable();
-            $table->string('approve_time', 20);
-            $table->integer('approve_user_id');
-            $table->string('delete_username', 200);
+            $table->string('approve_time', 20)->nullable();
+            $table->integer('approve_user_id')->nullable();
+            $table->string('delete_username', 200)->nullable();
             $table->date('delete_date')->nullable();
-            $table->string('delete_time', 20);
-            $table->integer('delete_user_id');
+            $table->string('delete_time', 20)->nullable();
+            $table->integer('delete_user_id')->nullable();
             $table->integer('store_challan_status')
                 ->default(1)
                 ->comment('1 = Pending, 2 = Issued');

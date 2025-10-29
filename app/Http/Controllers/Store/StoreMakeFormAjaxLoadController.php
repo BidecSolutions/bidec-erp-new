@@ -11,6 +11,7 @@ use Input;
 use DB;
 use Config;
 use PurchaseFacades;
+use Session;
 class StoreMakeFormAjaxLoadController extends Controller
 {
     /**
@@ -31,37 +32,47 @@ class StoreMakeFormAjaxLoadController extends Controller
 
     
 
-    public function addMoreMaterialRequestsDetailRows(Request $request){
+    public function addMoreMaterialRequestsDetailRows(Request $request)
+    {
         $counter = $request->input('counter');
-        $companyId = Session::get('company_id');
-        $companyLocationId = Session::get('company_location_id');
         $id = $request->input('id');
-        ?>
-        <tr id="removeMaterialRequestsRows_<?php echo $id?>_<?php echo $counter?>">
-            <input type="hidden" name="materialRequestDataSection[]" class="form-control requiredField materialRequestDataSection_1" id="materialRequestDataSection_<?php echo $id?>" value="0" />
-            <td>
-                <select name="category_id[]" id="category_id_<?php echo $id?>_<?php echo $counter?>" onchange="subItemListLoadDepandentCategoryId(this.id,this.value)" class="form-control requiredField">
-                    <?php echo PurchaseFacades::categoryList($m,'0');?>
-                </select>
-            </td>
-            <td>
-                <select name="sub_item_id[]" id="sub_item_id_<?php echo $id?>_<?php echo $counter?>" class="form-control requiredField">
-                </select>
-            </td>
-            <td>
-                <input type="number" name="qty[]" id="qty_<?php echo $id?>_<?php echo $counter?>" step="0.0001" class="form-control requiredField" />
-            </td>
-            <td>
-                <input type="text" name="sub_description[]" id="sub_description_<?php echo $id?>_<?php echo $counter?>" value="-" class="form-control requiredField" />
-            </td>
-            <td class="text-center"><button  onclick="removeMaterialRequestsRows('<?php echo $id?>','<?php echo $counter?>')" class="btn btn-xs btn-danger">Remove</button></td>
-        </tr>
-        <script>
-            $(function () {
-                $("select").select2();
-            });
-        </script>
-        <?php
+
+        $jsonFiles = [
+            'products' => storage_path('app/json_files/products.json'),
+            'product_variants' => storage_path('app/json_files/product_variants.json'),
+            'categories' => storage_path('app/json_files/categories.json'),
+            'brands' => storage_path('app/json_files/brands.json'),
+            'sizes' => storage_path('app/json_files/sizes.json'),
+            'departments' => storage_path('app/json_files/departments.json'),
+        ];
+
+        foreach ($jsonFiles as $key => $path) {
+            if (!file_exists($path)) {
+                generate_json($key);
+            }
+        }
+
+        $data = collect($jsonFiles)->map(fn($p) => json_decode(file_get_contents($p), true));
+        extract($data->toArray());
+
+        $categoryMap = collect($categories)->pluck('name', 'id');
+        $brandMap = collect($brands)->pluck('name', 'id');
+        $sizeMap = collect($sizes)->pluck('name', 'id');
+
+        $products = collect($products)
+            ->map(function ($product) use ($product_variants, $categoryMap, $brandMap, $sizeMap) {
+                $product['variants'] = array_filter($product_variants, fn($v) => $v['product_id'] == $product['id']);
+                foreach ($product['variants'] as &$variant) {
+                    $variant['size_name'] = $sizeMap[$variant['size_id']] ?? '-';
+                }
+                return $product;
+            })
+            ->where('status', 1)
+            ->values()
+            ->toArray();
+
+        // Return partial view
+        return view('Store.partials.material_request_row', compact('products', 'id', 'counter'));
     }
 
     public function makeFormPurchaseOrderDetailByPRNo(){

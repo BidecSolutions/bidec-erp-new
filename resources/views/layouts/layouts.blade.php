@@ -225,6 +225,11 @@
     @endif
 
     <div class="container-fluid">
+        <div id="preloader">
+            <div class="preloader-content">
+                <h3 class="bidec-logo" data-text="BIDEC..">BIDEC..</h3>
+            </div>
+        </div>
         @yield('content')
     </div>
     @if (empty($loginCnic))
@@ -498,34 +503,6 @@
                 }
             });
         }
-
-        // $('body').on('click', '#inactive-record', function() {
-        //     var userURL = $(this).data('url');
-        //     //alert(userURL);
-        //     //return 'Testing';
-
-        //     var trObj = $(this);
-        //     if (confirm("Are you sure you want to remove this?") == true) {
-        //         $.ajax({
-        //             url: userURL,
-        //             type: 'POST',
-        //             dataType: 'json',
-        //             data: {
-        //                 "_token": "{{ csrf_token() }}",
-        //             },
-        //             success: function(data) {
-        //                 if (typeof(data.success) == 'undefined') {
-        //                     alert(data.catchError);
-        //                     return;
-        //                 }
-        //                 alert(data.success);
-        //                 $("#filter-button").click();
-        //                 get_ajax_data();
-        //             }
-        //         });
-        //     }
-        // });
-  // 🟢 ACTIVATE RECORD
 // 🟢 ACTIVATE RECORD
 $('body').on('click', '#active-record', function () {
     var userURL = $(this).data('url');
@@ -888,6 +865,12 @@ $('body').on('click', '#inactive-record', function () {
             confirmButtonText: "OK"
         });
     @endif
+
+    window.addEventListener("load", function () {
+        const preloader = document.getElementById("preloader");
+        preloader.classList.add("fade-out");
+        setTimeout(() => (preloader.style.display = "none"), 600);
+    });
 </script>
 
 </html>
