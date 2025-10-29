@@ -20,6 +20,37 @@
 
 <div class="well">
     <div class="row" id="PrintPurchaseOrderDetail">
+          <div class="col-lg-12 text-center mb-3">
+    @if (!empty($company->school_logo))
+    @php
+        $logoPath = $company->school_logo;
+        if (!preg_match('/^http(s)?:\/\//', $logoPath)) {
+            $logoPath = asset($logoPath);
+        }
+    @endphp
+
+    <div class="text-center" style="margin-bottom: 15px;">
+        <img src="{{ $logoPath }}" alt="Company Logo"
+             style="
+                width: 100px;
+                height: 100px;
+                object-fit: cover;
+                border-radius: 50%;
+                border: 2px solid #ddd;
+                display: block;
+                margin: 0 auto 10px auto;
+             ">
+    </div>
+@endif
+
+
+<div class="text-center" style="margin-bottom: 30px;">
+    <h3 style="margin: 0; font-weight: 700;">Company Name: {{ strtoupper($company->name) }}</h3>
+    <p style="margin: 0;">Company Address: {{ $company->address ?? '-' }}</p>
+    <p style="margin: 0;">Company Contact: {{ $company->contact_no ?? '-' }}</p>
+</div>
+
+        </div>
         <style>
             .floatLeft{
                 width: 45%;
@@ -30,10 +61,13 @@
                 float: right;
             }
         </style>
+
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="floatLeft">
                 <div class="table-responsive">
+
                     <table class="table table-bordered table-striped">
+                        
                         <tbody>
                             <tr>
                                 <th>PO No.</th>
@@ -66,7 +100,9 @@
                             </tr>
                             <tr>
                                 <th>Payment Type</th>
-                                <td>{{ $purchaseOrder->paymentType }}</td>
+ <td>{{ $purchaseOrder->payment_type_name ?? 'N/A' }}</td>
+
+
                             </tr>
                             <tr>
                                 <th>Payment Rate</th>

@@ -155,7 +155,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <!-- <button type="button" class="btn btn-primary btn-sm" id="add-row">Add Row</button> -->
+                            <button type="button" class="btn btn-primary btn-sm" id="add-row">Add Row</button>
                         </div>
                     </div>
                 </div>
@@ -190,7 +190,7 @@
                 <td class="text-center">
                     <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
                 </td>
-            `;
+             `;
                 table.appendChild(newRow);
                 $('.new-select2').select2().removeClass('new-select2');
             });
