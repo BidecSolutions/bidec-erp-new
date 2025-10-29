@@ -16,136 +16,269 @@
         <div class="row">
 
 
-            <form method="POST" action="{{ route('purchase-orders.store') }}">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    @csrf
-                    
+         <form method="POST" action="{{ route('purchase-orders.store') }}">
+    @csrf
+
+    {{-- 🔴 Show all validation errors at the top --}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Validation Errors:</strong>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="panel-body">
+
+                    {{-- ===================== ROW 1 ===================== --}}
                     <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <div class="panel-body">
-                                        
-                                    <div class="row">
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                            <label class="sf-label">P.O Date.</label>
-                                            <span class="rflabelsteric"><strong>*</strong></span>
-                                            <input type="date" class="form-control requiredField" name="po_date" id="po_date" value="{{date('Y-m-d')}}" />
-                                        </div>
-                            
-                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                            <label class="sf-label">Invoice/Quotation No.</label>
-                                            <span class="rflabelsteric"><strong>*</strong></span>
-                                            <input type="text" class="form-control requiredField" name="quotation_no" id="quotation_no" placeholder="Invoice/Quotation No." value="" />
-                                        </div>
-                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                            <label class="sf-label">Quotation Date.</label>
-                                            <span class="rflabelsteric"><strong>*</strong></span>
-                                            <input type="date" class="form-control requiredField" name="quotation_date" id="quotation_date" value="{{date('Y-m-d')}}" />
-                                        </div>
-                                    </div>
-                                        <div class="lineHeight">&nbsp;</div>
-                                    <div class="row">
-                                           <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                            <label class="sf-label">Remarks</label>
-                                            <span class="rflabelsteric"><strong>*</strong></span>
-                                            <textarea name="main_description" id="main_description" rows="2" cols="50" style="resize:none;" class="form-control">-</textarea>
-                                        </div>
-                                          <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                            <label class="sf-label">Payment Type</label>
-                                            <select class="form-control" name="paymentTypeTwo" id="paymentTypeTwo" onchange="touglePurchaseOrderPaymentRate()">
-                                                <option value="">Select Payment Type</option>
-                                                @foreach($payment_types as $ptRow)
-                                                    <option value="{{$ptRow['id']}}<*>{{$ptRow['rate_type']}}<*>{{$ptRow['conversion_rate']}}" >{{$ptRow['name']}}</option>
-                                                @endforeach
-                                            </select>
-                                            <input type="hidden" name="paymentType" id="paymentType" value="" />
-                                        </div>
-                                          <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                            <label class="sf-label">Payment Type Rate</label>
-                                            <input type="number" readonly name="payment_type_rate" id="payment_type_rate" step="0.001" value="1" class="form-control" />
-                                        </div>
-                                    </div>
-                                    <div class="lineHeight">&nbsp;</div>
-                                    <div class="row">
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                                            <label class="sf-label">Supplier Name</label>
-                                            <select class="form-control select2" name="supplier_id" id="supplier_id">
-                                                <option value="">Select Supplier</option>
-                                                @foreach($suppliers as $sRow)
-                                                    <option value="{{$sRow['id']}}" >{{$sRow['name']}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-                                            <label class="sf-label">Note</label>
-                                            <span class="rflabelsteric"><strong>*</strong></span>
-                                            <textarea name="po_note" id="po_note" rows="2" cols="50" style="resize:none;" class="form-control">-</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="lineHeight">&nbsp;</div>
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered sf-table-list" id="purchaseOrderTable">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="text-center">Product</th>
-                                                            <th class="text-center">Qty.</th>
-                                                            <th class="text-center">Unit Price</th>
-                                                            <th class="text-center">Sub Total</th>
-                                                            <th class="text-center">Actions</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr id="row_1">
-                                                            <td>
-                                                                <input type="hidden" name="poDataArray[]" id="poDataArray" value="1" />
-                                                                <select name="productId_1" id="productId_1" class="form-control requiredField select2" onchange="fetchLastPurchasePrice(1)">
-                                                                    <option value="">Select Product Detail</option>
-                                                                    @foreach($products as $product)
-                                                                        <optgroup label="{{ $product['name'] }}">
-                                                                            @foreach($product['variants'] as $variant)
-                                                                                <option value="{{ $variant['id'] }}">
-                                                                                    {{ $variant['size_name'] }} - {{ number_format($variant['amount'], 2) }}
-                                                                                </option>
-                                                                            @endforeach
-                                                                        </optgroup>
-                                                                    @endforeach
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <input type="number" name="qty_1" id="qty_1" value="" class="form-control" oninput="calculateSubtotal(1)" />
-                                                            </td>
-                                                            <td>
-                                                                <input type="number" name="unitPrice_1" id="unitPrice_1" value="" class="form-control" oninput="calculateSubtotal(1)" />
-                                                            </td>
-                                                            <td>
-                                                                <input type="number" name="subTotal_1" id="subTotal_1" value="" class="form-control" readonly />
-                                                            </td>
-                                                            <td class="text-center">
-                                                                ---
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                                <div>
-                                                    <input type="button" class="btn btn-sm btn-primary" onclick="addMorePurchaseOrdersDetailRows()" value="Add More Rows" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                        <div class="col-lg-4">
+                            <label class="sf-label">P.O Date</label>
+                            <span class="rflabelsteric"><strong>*</strong></span>
+                            <input 
+                                type="date" 
+                                class="form-control" 
+                                name="po_date" 
+                                id="po_date" 
+                                value="{{ old('po_date', date('Y-m-d')) }}" 
+                            />
+                            @error('po_date')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label class="sf-label">Invoice/Quotation No.</label>
+                            <span class="rflabelsteric"><strong>*</strong></span>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="quotation_no" 
+                                id="quotation_no" 
+                                placeholder="Invoice/Quotation No." 
+                                value="{{ old('quotation_no') }}" 
+                            />
+                            @error('quotation_no')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label class="sf-label">Quotation Date</label>
+                            <span class="rflabelsteric"><strong>*</strong></span>
+                            <input 
+                                type="date" 
+                                class="form-control" 
+                                name="quotation_date" 
+                                id="quotation_date" 
+                                value="{{ old('quotation_date', date('Y-m-d')) }}" 
+                            />
+                            @error('quotation_date')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="lineHeight">&nbsp;</div>
+
+                    {{-- ===================== ROW 2 ===================== --}}
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <label class="sf-label">Remarks</label>
+                            <span class="rflabelsteric"><strong>*</strong></span>
+                            <textarea 
+                                name="main_description" 
+                                id="main_description" 
+                                rows="2" 
+                                class="form-control" 
+                                style="resize:none;"
+                            >{{ old('main_description', '-') }}</textarea>
+                            @error('main_description')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label class="sf-label">Payment Type</label>
+                            <select class="form-control" name="paymentTypeTwo" id="paymentTypeTwo" onchange="touglePurchaseOrderPaymentRate()">
+                                <option value="">Select Payment Type</option>
+                                @foreach($payment_types as $ptRow)
+                                    <option 
+                                        value="{{ $ptRow['id'] }}<*>{{ $ptRow['rate_type'] }}<*>{{ $ptRow['conversion_rate'] }}" 
+                                        {{ old('paymentTypeTwo') == $ptRow['id'] ? 'selected' : '' }}
+                                    >
+                                        {{ $ptRow['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <input type="hidden" name="paymentType" id="paymentType" value="{{ old('paymentType') }}" />
+                            @error('paymentTypeTwo')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="col-lg-4">
+                            <label class="sf-label">Payment Type Rate</label>
+                            <input 
+                                type="number" 
+                                readonly 
+                                name="payment_type_rate" 
+                                id="payment_type_rate" 
+                                step="0.001" 
+                                class="form-control" 
+                                value="{{ old('payment_type_rate', 1) }}" 
+                            />
+                        </div>
+                    </div>
+
+                    <div class="lineHeight">&nbsp;</div>
+
+                    {{-- ===================== ROW 3 ===================== --}}
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <label class="sf-label">Supplier Name</label>
+                            <select class="form-control select2" name="supplier_id" id="supplier_id">
+                                <option value="">Select Supplier</option>
+                                @foreach($suppliers as $sRow)
+                                    <option 
+                                        value="{{ $sRow['id'] }}" 
+                                        {{ old('supplier_id') == $sRow['id'] ? 'selected' : '' }}
+                                    >
+                                        {{ $sRow['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('supplier_id')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="col-lg-8">
+                            <label class="sf-label">Note</label>
+                            <span class="rflabelsteric"><strong>*</strong></span>
+                            <textarea 
+                                name="po_note" 
+                                id="po_note" 
+                                rows="2" 
+                                class="form-control" 
+                                style="resize:none;"
+                            >{{ old('po_note', '-') }}</textarea>
+                            @error('po_note')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="lineHeight">&nbsp;</div>
+
+                    {{-- ===================== PRODUCT TABLE ===================== --}}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered sf-table-list" id="purchaseOrderTable">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Product</th>
+                                            <th class="text-center">Qty.</th>
+                                            <th class="text-center">Unit Price</th>
+                                            <th class="text-center">Sub Total</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id="row_1">
+                                            <td>
+                                                <input type="hidden" name="poDataArray[]" id="poDataArray" value="1" />
+                                                <select 
+                                                    name="productId_1" 
+                                                    id="productId_1" 
+                                                    class="form-control select2" 
+                                                    onchange="fetchLastPurchasePrice(1)"
+                                                >
+                                                    <option value="">Select Product Detail</option>
+                                                    @foreach($products as $product)
+                                                        <optgroup label="{{ $product['name'] }}">
+                                                            @foreach($product['variants'] as $variant)
+                                                                <option 
+                                                                    value="{{ $variant['id'] }}" 
+                                                                    {{ old('productId_1') == $variant['id'] ? 'selected' : '' }}
+                                                                >
+                                                                    {{ $variant['size_name'] }} - {{ number_format($variant['amount'], 2) }}
+                                                                </option>
+                                                            @endforeach
+                                                        </optgroup>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input 
+                                                    type="number" 
+                                                    name="qty_1" 
+                                                    id="qty_1" 
+                                                    class="form-control" 
+                                                    value="{{ old('qty_1') }}" 
+                                                    oninput="calculateSubtotal(1)" 
+                                                />
+                                            </td>
+                                            <td>
+                                                <input 
+                                                    type="number" 
+                                                    name="unitPrice_1" 
+                                                    id="unitPrice_1" 
+                                                    class="form-control" 
+                                                    value="{{ old('unitPrice_1') }}" 
+                                                    oninput="calculateSubtotal(1)" 
+                                                />
+                                            </td>
+                                            <td>
+                                                <input 
+                                                    type="number" 
+                                                    name="subTotal_1" 
+                                                    id="subTotal_1" 
+                                                    class="form-control" 
+                                                    readonly 
+                                                    value="{{ old('subTotal_1') }}" 
+                                                />
+                                            </td>
+                                            <td class="text-center">---</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div>
+                                    <input 
+                                        type="button" 
+                                        class="btn btn-sm btn-primary" 
+                                        onclick="addMorePurchaseOrdersDetailRows()" 
+                                        value="Add More Rows" 
+                                    />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="lineHeight">&nbsp;</div>
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
-                            <button type="reset" id="reset" class="btn btn-primary">Clear Form</button>
-                            <button type="submit" class="btn btn-sm btn-success">Submit</button>
-                        </div>
-                    </div>
-                </div>
-</form> 
+
+                </div> {{-- End panel-body --}}
+            </div>
+        </div>
+
+        <div class="lineHeight">&nbsp;</div>
+
+        {{-- ===================== BUTTONS ===================== --}}
+        <div class="row">
+            <div class="col-lg-12 text-right">
+                <button type="reset" id="reset" class="btn btn-primary">Clear Form</button>
+                <button type="submit" class="btn btn-success btn-sm">Submit</button>
+            </div>
+        </div>
+    </div>
+</form>
+
         </div>
     </div>
 </div>

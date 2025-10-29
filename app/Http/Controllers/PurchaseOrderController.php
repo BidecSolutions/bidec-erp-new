@@ -117,10 +117,15 @@ class PurchaseOrderController extends Controller
 
             // Proceed with your logic if validation passes.
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors(),
-            ], 422);
+             if ($this->isApi) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $e->errors(),
+        ], 422);
+    }
+    return redirect()->back()
+        ->withErrors($e->errors())
+        ->withInput();
         }
 
         // Begin transaction
