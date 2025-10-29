@@ -40,18 +40,12 @@
                                 <input type="text" name="ntn_no"
                                     class="form-control @error('ntn_no') border border-danger @enderror" id="ntn_no"
                                     value="{{ old('ntn_no') }}" />
-                                @error('ntn_no')
-                                    <div class="text-sm text-danger text-red-600">{{ $message }}</div>
-                                @enderror
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                                 <label>STRN No</label>
                                 <input type="text" name="strn_no"
                                     class="form-control @error('strn_no') border border-danger @enderror" id="strn_no"
                                     value="{{ old('strn_no') }}" />
-                                @error('strn_no')
-                                    <div class="text-sm text-danger text-red-600">{{ $message }}</div>
-                                @enderror
                             </div>
                         </div>
                         <div class="row">
@@ -62,11 +56,17 @@
                                         <option value="{{ $cRow['id'] }}">{{ $cRow['city_name'] }}</option>
                                     @endforeach
                                 </select>
+                                 @error('city_id')
+                                    <div class="text-sm text-danger text-red-600">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
                                 <label>Physical Address</label>
                                 <input type="text" name="physical_address" id="physical_address" value=""
                                     class="form-control" />
+                                @error('physical_address')
+                                    <div class="text-sm text-danger text-red-600">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                         <div class="row">
