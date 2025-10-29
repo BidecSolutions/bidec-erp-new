@@ -225,6 +225,11 @@
     @endif
 
     <div class="container-fluid">
+        <div id="preloader">
+            <div class="preloader-content">
+                <h3 class="bidec-logo" data-text="BIDEC..">BIDEC..</h3>
+            </div>
+        </div>
         @yield('content')
     </div>
     @if (empty($loginCnic))
@@ -368,7 +373,6 @@
         </div>
     </div>
 
-    @include('includes._footer')
     <script>
         function openTraceStockModel() {
             var pageType = true;
@@ -499,44 +503,18 @@
                 }
             });
         }
-
-        // $('body').on('click', '#inactive-record', function() {
-        //     var userURL = $(this).data('url');
-        //     //alert(userURL);
-        //     //return 'Testing';
-
-        //     var trObj = $(this);
-        //     if (confirm("Are you sure you want to remove this?") == true) {
-        //         $.ajax({
-        //             url: userURL,
-        //             type: 'POST',
-        //             dataType: 'json',
-        //             data: {
-        //                 "_token": "{{ csrf_token() }}",
-        //             },
-        //             success: function(data) {
-        //                 if (typeof(data.success) == 'undefined') {
-        //                     alert(data.catchError);
-        //                     return;
-        //                 }
-        //                 alert(data.success);
-        //                 $("#filter-button").click();
-        //                 get_ajax_data();
-        //             }
-        //         });
-        //     }
-        // });
-        $('body').on('click', '#inactive-record', function() {
+// 🟢 ACTIVATE RECORD
+$('body').on('click', '#active-record', function () {
     var userURL = $(this).data('url');
 
     Swal.fire({
-        title: "Are you sure?",
-        text: "You want to deactivate this record?",
-        icon: "warning",
+        title: "Activate Record?",
+        text: "Are you sure you want to activate this record?",
+        icon: "question",
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, deactivate it!"
+        confirmButtonColor: "#28a745",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, Activate"
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
@@ -544,19 +522,76 @@
                 type: 'POST',
                 dataType: 'json',
                 data: { "_token": "{{ csrf_token() }}" },
-                success: function(data) {
-                    if (typeof(data.success) == 'undefined') {
-                        Swal.fire("Error", data.catchError, "error");
+                success: function (data) {
+                    if (!data.success) {
+                        Swal.fire("Error", data.catchError || "Something went wrong!", "error");
                         return;
                     }
-                    Swal.fire("Deactivated!", data.success, "success");
-                    $("#filter-button").click();
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Activated!",
+                        text: data.success,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+
+                    // Refresh according to filter
                     get_ajax_data();
+                },
+                error: function () {
+                    Swal.fire("Error", "Something went wrong!", "error");
                 }
             });
         }
     });
 });
+
+
+// 🔴 INACTIVATE RECORD
+$('body').on('click', '#inactive-record', function () {
+    var userURL = $(this).data('url');
+
+    Swal.fire({
+        title: "Deactivate Record?",
+        text: "Are you sure you want to deactivate this record?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Yes, Deactivate"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: userURL,
+                type: 'POST',
+                dataType: 'json',
+                data: { "_token": "{{ csrf_token() }}" },
+                success: function (data) {
+                    if (!data.success) {
+                        Swal.fire("Error", data.catchError || "Something went wrong!", "error");
+                        return;
+                    }
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Deactivated!",
+                        text: data.success,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+
+                    // ✅ Reapply filter and reload table
+                    get_ajax_data();
+                },
+                error: function () {
+                    Swal.fire("Error", "Something went wrong!", "error");
+                }
+            });
+        }
+    });
+});
+
 
         // $('body').on('click', '#active-record', function() {
         //     var userURL = $(this).data('url');
@@ -581,37 +616,6 @@
         //         });
         //     }
         // });
-$('body').on('click', '#active-record', function() {
-    var userURL = $(this).data('url');
-
-    Swal.fire({
-        title: "Are you sure?",
-        text: "You want to activate this record?",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#28a745",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, activate it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: userURL,
-                type: 'POST',
-                dataType: 'json',
-                data: { "_token": "{{ csrf_token() }}" },
-                success: function(data) {
-                    if (typeof(data.success) == 'undefined') {
-                        Swal.fire("Error", data.catchError, "error");
-                        return;
-                    }
-                    Swal.fire("Activated!", data.success, "success");
-                    $("#filter-button").click();
-                    get_ajax_data();
-                }
-            });
-        }
-    });
-});
 
 
         $('body').on('click', '#unsuspended-record', function() {
@@ -630,10 +634,12 @@ $('body').on('click', '#active-record', function() {
                     },
                     success: function(data) {
                         if (typeof(data.success) == 'undefined') {
-                            alert(data.catchError);
+                          Swal.fire("Error!", data.catchError, "error");
+
                             return;
                         }
-                        alert(data.success);
+                  Swal.fire("Success!", data.success, "success");
+
                         $("#filter-button").click();
                     }
                 });
@@ -821,5 +827,50 @@ $('body').on('click', '#active-record', function() {
     }
     </script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    @if (session('success'))
+        Swal.fire({
+            title: "Success!",
+            text: "{{ session('success') }}",
+            icon: "success",
+            confirmButtonText: "OK"
+        });
+    @endif
+
+    @if (session('error'))
+        Swal.fire({
+            title: "Error!",
+            text: "{{ session('error') }}",
+            icon: "error",
+            confirmButtonText: "OK"
+        });
+    @endif
+
+    @if (session('warning'))
+        Swal.fire({
+            title: "Warning!",
+            text: "{{ session('warning') }}",
+            icon: "warning",
+            confirmButtonText: "OK"
+        });
+    @endif
+
+    @if (session('info'))
+        Swal.fire({
+            title: "Info!",
+            text: "{{ session('info') }}",
+            icon: "info",
+            confirmButtonText: "OK"
+        });
+    @endif
+
+    window.addEventListener("load", function () {
+        const preloader = document.getElementById("preloader");
+        preloader.classList.add("fade-out");
+        setTimeout(() => (preloader.style.display = "none"), 600);
+    });
+</script>
 
 </html>

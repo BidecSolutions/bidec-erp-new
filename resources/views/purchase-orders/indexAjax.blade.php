@@ -6,8 +6,8 @@
     <td class="text-center">{{ $loop->index + 1 }}</td>
     <td>{{$dRow->po_no}}</td>
     <td>{{CommonHelper::changeDateFormat($dRow->po_date)}}</td>
-    <td>{{$dRow->delivery_place}}</td>
-    <td>{{$dRow->invoice_quotation_no}}</td>
+   
+    <td>{{$dRow->invoice_quotation_no ?? '-'}}</td>
     <td>{{CommonHelper::changeDateFormat($dRow->quotation_date)}}</td>
     <td>{{$dRow->supplier_name}}</td>
     <td class="text-center">

@@ -14,42 +14,42 @@
             </div>
         </div>
         <div class="row">
+
+
             <form method="POST" action="{{ route('purchase-orders.store') }}">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     @csrf
+                    
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <div class="panel-body">
                                         
                                     <div class="row">
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                             <label class="sf-label">P.O Date.</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <input type="date" class="form-control requiredField" name="po_date" id="po_date" value="{{date('Y-m-d')}}" />
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
-                                            <label class="sf-label">Delivery place</label>
-                                            <span class="rflabelsteric"><strong>*</strong></span>
-                                            <input type="text" class="form-control" name="delivery_place" id="delivery_place" placeholder="Delivery Place" value="Factory" />
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                            
+                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                             <label class="sf-label">Invoice/Quotation No.</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <input type="text" class="form-control requiredField" name="quotation_no" id="quotation_no" placeholder="Invoice/Quotation No." value="" />
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                             <label class="sf-label">Quotation Date.</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <input type="date" class="form-control requiredField" name="quotation_date" id="quotation_date" value="{{date('Y-m-d')}}" />
                                         </div>
                                     </div>
+                                        <div class="lineHeight">&nbsp;</div>
                                     <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                           <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                             <label class="sf-label">Remarks</label>
                                             <span class="rflabelsteric"><strong>*</strong></span>
                                             <textarea name="main_description" id="main_description" rows="2" cols="50" style="resize:none;" class="form-control">-</textarea>
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                          <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                             <label class="sf-label">Payment Type</label>
                                             <select class="form-control" name="paymentTypeTwo" id="paymentTypeTwo" onchange="touglePurchaseOrderPaymentRate()">
                                                 <option value="">Select Payment Type</option>
@@ -59,7 +59,7 @@
                                             </select>
                                             <input type="hidden" name="paymentType" id="paymentType" value="" />
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                          <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                                             <label class="sf-label">Payment Type Rate</label>
                                             <input type="number" readonly name="payment_type_rate" id="payment_type_rate" step="0.001" value="1" class="form-control" />
                                         </div>
@@ -99,7 +99,7 @@
                                                         <tr id="row_1">
                                                             <td>
                                                                 <input type="hidden" name="poDataArray[]" id="poDataArray" value="1" />
-                                                                <select name="productId_1" id="productId_1" class="form-control requiredField select2">
+                                                                <select name="productId_1" id="productId_1" class="form-control requiredField select2" onchange="fetchLastPurchasePrice(1)">
                                                                     <option value="">Select Product Detail</option>
                                                                     @foreach($products as $product)
                                                                         <optgroup label="{{ $product['name'] }}">
@@ -145,78 +145,145 @@
                         </div>
                     </div>
                 </div>
-            </form 
+</form> 
         </div>
     </div>
 </div>
 @endsection
+
 @section('script')
-    <script>
-        function touglePurchaseOrderPaymentRate(){
-            var paymentTypeTwo = $('#paymentTypeTwo').val();
-            const paymentTypeSplit = paymentTypeTwo.split('<*>');
-            var paymentType = $('#paymentType').val(paymentTypeSplit[0]);
-            var conversionRateType = paymentTypeSplit[1];
-            if(conversionRateType == 2){
-                $('#payment_type_rate').removeAttr('readonly');
-                $('#payment_type_rate').val(paymentTypeSplit[2]);   
-            }else{
-                $('#payment_type_rate').val(paymentTypeSplit[2]);
-                $('#payment_type_rate').attr('readonly','readonly');
+<script>
+    function touglePurchaseOrderPaymentRate() {
+        var paymentTypeTwo = $('#paymentTypeTwo').val();
+        const paymentTypeSplit = paymentTypeTwo.split('<*>');
+        var paymentType = $('#paymentType').val(paymentTypeSplit[0]);
+        var conversionRateType = paymentTypeSplit[1];
+        if(conversionRateType == 2){
+            $('#payment_type_rate').removeAttr('readonly');
+            $('#payment_type_rate').val(paymentTypeSplit[2]);   
+        }else{
+            $('#payment_type_rate').val(paymentTypeSplit[2]);
+            $('#payment_type_rate').attr('readonly','readonly');
+        }
+    }
+
+    var rowCounter = 1; // Keep track of the row numbers
+    function addMorePurchaseOrdersDetailRows() {
+        rowCounter++;
+        var newRow = `
+            <tr id="row_${rowCounter}">
+                <td>
+                    <input type="hidden" name="poDataArray[]" id="poDataArray" value="${rowCounter}" />
+                    <select name="productId_${rowCounter}" id="productId_${rowCounter}" class="form-control requiredField new-select2" onchange="fetchLastPurchasePrice(${rowCounter})">
+                        <option value="">Select Product Detail</option>
+                        @foreach($products as $product)
+                            <optgroup label="{{ $product['name'] }}">
+                                @foreach($product['variants'] as $variant)
+                                    <option value="{{ $variant['id'] }}">
+                                        {{ $variant['size_name'] }} - {{ number_format($variant['amount'], 2) }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @endforeach
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="qty_${rowCounter}" id="qty_${rowCounter}" value="" class="form-control" oninput="calculateSubtotal(${rowCounter})" />
+                </td>
+                <td>
+                    <input type="number" name="unitPrice_${rowCounter}" id="unitPrice_${rowCounter}" value="" class="form-control" oninput="calculateSubtotal(${rowCounter})" />
+                </td>
+                <td>
+                    <input type="number" name="subTotal_${rowCounter}" id="subTotal_${rowCounter}" value="" class="form-control" readonly />
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removePurchaseOrderRow(${rowCounter})">Remove</button>
+                </td>
+            </tr>`;
+        $('#purchaseOrderTable tbody').append(newRow);
+        $('.new-select2').select2();
+    }
+
+    function removePurchaseOrderRow(rowId) {
+        $(`#row_${rowId}`).remove();
+    }
+
+    function calculateSubtotal(rowId) {
+        var qty = parseFloat(document.getElementById('qty_'+rowId).value) || 0;
+        var unitPrice = parseFloat(document.getElementById('unitPrice_'+rowId).value) || 0;
+        document.getElementById('subTotal_'+rowId).value = (qty * unitPrice).toFixed(2);
+    }
+
+    // Prevent duplicate product variants
+    $('form').on('submit', function (e) {
+        const selectedProducts = [];
+        let hasDuplicate = false;
+        $('select[name^="productId_"]').each(function () {
+            const value = $(this).val();
+            if (value) {
+                if (selectedProducts.includes(value)) {
+                    hasDuplicate = true;
+                    return false;
+                }
+                selectedProducts.push(value);
             }
+        });
+        if (hasDuplicate) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Duplicate Product',
+                text: 'A product cannot be added more than once in the same Purchase Order.',
+                confirmButtonColor: '#d33'
+            });
         }
-        var rowCounter = 1; // Keep track of the row numbers
-        function addMorePurchaseOrdersDetailRows() {
-            rowCounter++;
-            var newRow = `
-                <tr id="row_${rowCounter}">
-                    <td>
-                        <input type="hidden" name="poDataArray[]" id="poDataArray" value="${rowCounter}" />
-                        <select name="productId_${rowCounter}" id="productId_${rowCounter}" class="form-control requiredField  new-select2">
-                            <option value="">Select Product Detail</option>
-                            @foreach($products as $product)
-                                <optgroup label="{{ $product['name'] }}">
-                                    @foreach($product['variants'] as $variant)
-                                        <option value="{{ $variant['id'] }}">
-                                            {{ $variant['size_name'] }} - {{ number_format($variant['amount'], 2) }}
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td>
-                        <input type="number" name="qty_${rowCounter}" id="qty_${rowCounter}" value="" class="form-control" oninput="calculateSubtotal(${rowCounter})" />
-                    </td>
-                    <td>
-                        <input type="number" name="unitPrice_${rowCounter}" id="unitPrice_${rowCounter}" value="" class="form-control" oninput="calculateSubtotal(${rowCounter})" />
-                    </td>
-                    <td>
-                        <input type="number" name="subTotal_${rowCounter}" id="subTotal_${rowCounter}" value="" class="form-control" readonly />
-                    </td>
-                    <td class="text-center">
-                        <button type="button" class="btn btn-danger btn-sm" onclick="removePurchaseOrderRow(${rowCounter})">Remove</button>
-                    </td>
-                </tr>`;
-                $('#purchaseOrderTable tbody').append(newRow);
-                
-                $('.new-select2').select2();
+    });
+
+    function fetchLastPurchasePrice(id) {
+    const baseUrl = $("#url").val();
+    const productId = $(`#productId_${id}`).val();
+
+    if (!productId) return;
+
+    // ✅ Identify the row properly
+    const row = $(`#productId_${id}`).closest('tr');
+
+    $.ajax({
+        url: `${baseUrl}/purchase-orders/get-last-purchase-price/${productId}`,
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function () {
+            row.find(`#unitPrice_${id}`).val('...');
+        },
+        success: function (response) {
+            // ✅ Parse if returned as string
+            if (typeof response === 'string') {
+                try {
+                    response = JSON.parse(response);
+                } catch (e) {
+                    console.error('JSON parse error:', e);
+                    response = {};
+                }
+            }
+
+            // ✅ Handle valid response
+            if (response && response.price !== undefined && response.price !== null) {
+                const price = parseFloat(response.price);
+                row.find(`#unitPrice_${id}`).val(isNaN(price) ? 0 : price.toFixed(2));
+                calculateSubtotal(id);
+            } else {
+                row.find(`#unitPrice_${id}`).val(0);
+                alert("⚠️ No purchase rate found for this product.");
+            }
+        },
+        error: function (xhr) {
+            console.error('Error fetching purchase price:', xhr.responseText);
+            alert("❌ Error fetching purchase price. Please try again.");
+            row.find(`#unitPrice_${id}`).val(0);
         }
-
-        function removePurchaseOrderRow(rowId) {
-            $(`#row_${rowId}`).remove(); // Remove the row with the specified ID
-        }
-
-        function calculateSubtotal(rowId) {
-            // Get the quantity and unit price values
-            var qty = parseFloat(document.getElementById('qty_'+rowId+'').value) || 0;
-            var unitPrice = parseFloat(document.getElementById('unitPrice_'+rowId+'').value) || 0;
-
-            // Calculate the subtotal
-            var subTotal = qty * unitPrice;
-
-            // Set the value of the subTotal field
-            document.getElementById('subTotal_'+rowId+'').value = subTotal.toFixed(2); // rounded to 2 decimal places
-        }
-    </script>
+    });
+    calculateSubtotal(id);
+}
+    
+</script>
 @endsection

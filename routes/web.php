@@ -49,6 +49,7 @@ use App\Http\Controllers\{
     PurchaseInvoiceController,
     SaleInvoiceController
 };
+
 //use GPBMetadata\Google\Api\Auth;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -286,12 +287,17 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/update/{id}', 'update')->name('purchase-orders.update');
             Route::get('/show', 'show')->name('payments.show');
             Route::post('/destroy/{id}', 'destroy')->name('purchase-orders.destroy');
+            Route::get('/get-last-purchase-price/{productId}', 'getLastPurchasePrice');
+
         });
     });
+
 
     Route::post('/purchase-orders/approvePurchaseOrderVoucher', [PurchaseOrderController::class, 'approvePurchaseOrderVoucher']);
     Route::post('/purchase-orders/purchaseOrderVoucherRejectAndRepost', [PurchaseOrderController::class, 'purchaseOrderVoucherRejectAndRepost']);
     Route::post('/purchase-orders/purchaseOrderVoucherActiveAndInactive', [PurchaseOrderController::class, 'purchaseOrderVoucherActiveAndInactive']);
+
+
 
 
     Route::controller(TransferNoteController::class)->group(function () {
@@ -638,3 +644,4 @@ Route::middleware(['auth'])->group(function () {
 
 
 include 'module/users.php';
+include 'module/store.php';

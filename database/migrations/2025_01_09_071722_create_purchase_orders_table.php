@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('company_id');
             $table->integer('company_location_id');
             $table->date('po_date')->nullable();
-            $table->string('delivery_place')->nullable();
+            // $table->string('delivery_place')->nullable();
             $table->string('invoice_quotation_no')->nullable();
             $table->date('quotation_date')->nullable();
             $table->text('main_description')->nullable();
