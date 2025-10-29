@@ -95,6 +95,9 @@ class PurchaseOrderController extends Controller
        
             $validatedData = $request->validate([
                 'po_date' => 'required|date',
+                'delivery_place' => 'nullable|string|max:255',
+                'quotation_no' => 'nullable|string|max:255',
+                'quotation_no' => 'nullable|string|max:255',
                 'quotation_no' => 'nullable|string|max:255',
                 'quotation_date' => 'required|date',
                 'main_description' => 'nullable|string|max:255',
@@ -110,7 +113,9 @@ class PurchaseOrderController extends Controller
             'po_date.required' => 'Purchase order date is required.',
             'po_date.date' => 'Purchase order date must be a valid date.',
 
-          
+            'delivery_place.string' => 'Delivery place must be a valid string.',
+            'delivery_place.max' => 'Delivery place cannot exceed 255 characters.',
+
             'quotation_no.required' => 'Quotation number is required.',
             'quotation_no.string' => 'Quotation number must be a string.',
             'quotation_no.max' => 'Quotation number cannot exceed 255 characters.',
@@ -286,8 +291,6 @@ class PurchaseOrderController extends Controller
         try {
             $validatedData = $request->validate([
                 'po_date' => 'required|date',
-                // 'delivery_place' => 'required|string|max:255',
-                // 'delivery_place' => 'required|string|max:255',
                 'quotation_no' => 'nullable|string|max:255',
                 'quotation_date' => 'required|date',
                 'main_description' => 'nullable|string',

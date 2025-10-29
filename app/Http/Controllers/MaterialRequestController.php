@@ -369,47 +369,39 @@ class MaterialRequestController extends Controller
             $companyLocationId = Session::get('company_location_id');
 
             // Use Query Builder to select data
-            $purchaseOrders = DB::table('purchase_orders as po')
+            $materialRequests = DB::table('material_requests as mr')
                 ->select(
-                    'po.id',
-                    'po.company_id',
-                    'po.company_location_id',
-                    'po.po_no',
-                    'po.po_date',
-                    // 'po.delivery_place',
-                    // 'po.delivery_place',
-                    'po.invoice_quotation_no',
-                    'po.quotation_date',
-                    'po.main_description',
-                    'po.paymentType',
-                    'po.payment_type_rate',
-                    'po.supplier_id',
-                    'po.po_note',
-                    'po.status',
-                    'po.po_status',
-                    'po.created_date',
-                    'po.created_by',
-                    's.name as supplier_name',
+                    'mr.id',
+                    'mr.company_id',
+                    'mr.location_id',
+                    'mr.material_request_no',
+                    'mr.material_request_date',
+                    'mr.main_description',
+                    'mr.department_id',
+                    'mr.status',
+                    'mr.material_request_status',
+                    'mr.created_date',
+                    'mr.created_by',
+                    'd.department_name as department_name',
 
                 )
-                ->join('suppliers as s', 'po.supplier_id', '=', 's.id')
-                ->where('po.process_type', 1)
-                ->whereBetween('po.po_date', [$fromDate, $toDate])
-                ->where('po.company_id', $companyId)
-                ->where('po.company_location_id', $companyLocationId);
+                ->join('departments as d', 'mr.department_id', '=', 'd.id')
+                ->whereBetween('mr.material_request_date', [$fromDate, $toDate])
+                ->where('mr.company_id', $companyId)
+                ->where('mr.location_id', $companyLocationId);
             if ($status) {
-                $purchaseOrders = $purchaseOrders->where('po.status', $status);
+                $materialRequests = $materialRequests->where('mr.status', $status);
             }
 
-            $purchaseOrders = $purchaseOrders->get();
+            $materialRequests = $materialRequests->get();
 
             // If rendering in a web view (for non-API requests)
             if (!$this->isApi) {
-                return webResponse($this->page, 'indexAjax', compact('purchaseOrders'));
+                return webResponse($this->page, 'indexAjax', compact('materialRequests'));
             }
 
             // Return JSON response for API requests
-            return jsonResponse($purchaseOrders, 'Purchase Orders Retrieved Successfully', 'success', 200);
+            return jsonResponse($materialRequests, 'Material Request Retrieved Successfully', 'success', 200);
         }
 
         if (!$this->isApi) {

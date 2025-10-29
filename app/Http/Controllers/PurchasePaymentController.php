@@ -241,7 +241,7 @@ class PurchasePaymentController extends Controller
                 'date' => $currentDate->toDateString(),
                 'time' => $currentDate->toTimeString(),
                 'po_id' => $request->input('po_id') ?? 0,
-                'pi_voucher_type' => $piVoucherType,
+                'pi_voucher_type' => $piVoucherType ?? 0,
                 'pi_id' => $invoiceId,
                 'pv_no' => $pvNo,
                 'slip_no' => $request->input('slip_no') ?? '-',

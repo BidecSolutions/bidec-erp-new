@@ -12,6 +12,9 @@
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
         <?php echo CommonHelper::displayPrintButtonInBlade('PrintReceiptVoucherDetail','','1');?>
         {{CommonHelper::getButtonsforPaymentAndReceiptAndJournalVouchers($data)}}
+        @if($receiptDetail->status == 1 && $receiptDetail->rv_status == 2 && $receiptDetail->rv_type == 1)
+            <button class="btn btn-xs btn-danger" onclick="reverseFinanceVoucher('2', '<?php echo $receiptDetail->id?>', '<?php echo $receiptDetail->status?>', '<?php echo $receiptDetail->rv_status?>')">Reverse Voucher</button>&nbsp;
+        @endif
     </div>
 </div>
 <div class="lineHeight">&nbsp;</div>

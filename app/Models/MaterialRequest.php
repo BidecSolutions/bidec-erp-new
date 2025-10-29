@@ -26,7 +26,7 @@ class MaterialRequest extends Model
     {
         $prifix = 'MR';
 
-        $maxReg = DB::selectOne("select max(convert(substr(`material_request_no`,3,length(substr(`material_request_no`,3))-4),signed integer)) reg from `purchase_orders` where substr(`po_no`,-4,2) = " . date('m') . " and substr(`po_no`,-2,2) = " . date('y') . "")->reg;
+        $maxReg = DB::selectOne("select max(convert(substr(`material_request_no`,3,length(substr(`material_request_no`,3))-4),signed integer)) reg from `material_requests` where substr(`material_request_no`,-4,2) = " . date('m') . " and substr(`material_request_no`,-2,2) = " . date('y') . "")->reg;
         $reg = $maxReg + 1;
         return $voucherNo = $prifix . $reg . date('my');
     }
@@ -37,6 +37,7 @@ class MaterialRequest extends Model
             $model->company_id = Session::get('company_id');
             $model->location_id = Session::get('company_location_id');
             $model->status = 1;
+            $model->user_id = Auth::user()->id;
             $model->created_by = Auth::user()->name;
             $model->created_date = date('Y-m-d');
         });
