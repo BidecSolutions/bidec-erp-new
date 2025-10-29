@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('material_request_data', function (Blueprint $table) {
+        Schema::create('material_request_datas', function (Blueprint $table) {
             $table->id();
             $table->integer('material_request_id');
             $table->integer('product_variant_id');
@@ -23,9 +23,8 @@ return new class extends Migration
                 ->default(1)
                 ->comment('1 = Pending, 2 = Issued');
             $table->integer('status');
-            $table->date('date');
-            $table->string('time', 20);
-            $table->string('username', 200);
+            $table->date('created_date');
+            $table->string('created_by', 200);
             $table->integer('user_id');
             $table->string('approve_username', 200)->nullable();
             $table->string('delete_username', 200)->nullable();

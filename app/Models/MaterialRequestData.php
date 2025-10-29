@@ -26,6 +26,7 @@ class MaterialRequestData extends Model
     {
         static::creating(function ($model) {
             $model->status = 1;
+            $model->user_id = Auth::user()->id;
             $model->created_by = Auth::user()->name;
             $model->created_date = date('Y-m-d');
         });
