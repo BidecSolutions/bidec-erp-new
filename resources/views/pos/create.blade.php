@@ -229,13 +229,41 @@
     <div class="well_N">
         <div class="boking-wrp dp_sdw">
             <div class="row align-items-center mb-3">
-                <div class="col-lg-6">
-                    {{ CommonHelper::displayPageTitle('Add New POS') }}
-                </div>
-                <div class="col-lg-6 text-right">
-                    <a href="#" class="btn btn-success mr-2" onclick="loadSalesData('today')">Today Sale</a>
-                    <a href="#" class="btn btn-warning" onclick="loadSalesData('last-month')">Last Month Sale</a>
-                </div>
+                
+           <div class="row align-items-center mb-3">
+                <div class="col-lg-9 d-flex flex-wrap align-items-center gap-2">
+
+        <!-- Product Barcode Scanner -->
+        <select id="barcode-scanner" class="form-control select2" autofocus>
+            <option>SELECT PRODUCT / SCAN BARCODE</option>
+            <option value="101">Rice Bowl</option>
+            <option value="102">Chicken Salad</option>
+            <option value="103">Iced Coffee</option>
+        </select>
+
+        <!-- Quantity -->
+        <input 
+            type="number" 
+            class="form-control text-center" 
+            placeholder="QTY" 
+            min="1" 
+            style="width: 90px; height:40px; margin-left: 15px; margin-right: 25px;">
+
+        <!-- Buttons Group -->
+        <div class="d-flex align-items-center gap-2">
+             <button id="calculate-change" class="btn btn-primary btn-block">Add</button>
+            <!-- <a href="#" class="btn btn-outline-success" onclick="loadSalesData('today')">
+                <i class="bi bi-calendar-day"></i> Today Sale
+            </a>
+            <a href="#" class="btn btn-outline-warning" onclick="loadSalesData('last-month')">
+                <i class="bi bi-calendar3"></i> Last Month
+            </a> -->
+        </div>
+
+    </div>
+</div>
+
+
 
                 <!-- Add modal -->
                 <div class="modal fade" id="salesModal" tabindex="-1" role="dialog">
@@ -607,26 +635,7 @@
             });
 
             // Load accounts based on payment type
-            function loadAccountsDependPaymentType() {
-                var paymentType = $('#payment_type').val();
-                var baseUrl = $("#url").val();
-                $('#loadAccountsDependPaymentType').html('');
-                $.ajax({
-                    url: "" + baseUrl + "/pos/loadAccountsDependPaymentType",
-                    method: "GET",
-                    data: {
-                        paymentType: paymentType,
-                    },
-                    error: function() {
-                        alert("error");
-                    },
-                    success: function(response) {
-                        $('#loadAccountsDependPaymentType').html(response);
-                    }
-                });
-            }
 
-            loadAccountsDependPaymentType();
 
             // Category filter functionality
 

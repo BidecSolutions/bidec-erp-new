@@ -97,6 +97,8 @@ class PurchaseOrderController extends Controller
         try {
             $validatedData = $request->validate([
                 'po_date' => 'required|date',
+                'delivery_place' => 'required|string|max:255',
+                'quotation_no' => 'nullable|string|max:255',
                 // 'delivery_place' => 'required|string|max:255',
                 'quotation_no' => 'nullable|string|max:255',
                 // 'delivery_place' => 'required|string|max:255',
@@ -113,7 +115,48 @@ class PurchaseOrderController extends Controller
                 'qty_*' => 'required|numeric',
                 'unitPrice_*' => 'required|numeric',
                 'subTotal_*' => 'required|numeric',
-            ]);
+            ],
+        [
+            'po_date.required' => 'Purchase order date is required.',
+            'po_date.date' => 'Purchase order date must be a valid date.',
+
+            'delivery_place.required' => 'Delivery place is required.',
+            'delivery_place.string' => 'Delivery place must be a valid string.',
+            'delivery_place.max' => 'Delivery place cannot exceed 255 characters.',
+
+            'quotation_no.required' => 'Quotation number is required.',
+            'quotation_no.string' => 'Quotation number must be a string.',
+            'quotation_no.max' => 'Quotation number cannot exceed 255 characters.',
+
+            'quotation_date.required' => 'Quotation date is required.',
+            'quotation_date.date' => 'Quotation date must be a valid date.',
+
+            'paymentType.required' => 'Payment type is required.',
+            'paymentType.integer' => 'Payment type must be an integer.',
+
+            'payment_type_rate.required' => 'Payment type rate is required.',
+            'payment_type_rate.numeric' => 'Payment type rate must be numeric.',
+
+            'supplier_id.required' => 'Supplier is required.',
+            'supplier_id.integer' => 'Supplier ID must be an integer.',
+
+            'poDataArray.required' => 'At least one product entry is required.',
+            'poDataArray.array' => 'PO data must be an array.',
+            'poDataArray.*.integer' => 'Each product entry must be an integer.',
+
+            'productId_*.required' => 'Product ID is required.',
+            'productId_*.integer' => 'Product ID must be an integer.',
+
+            'qty_*.required' => 'Quantity is required.',
+            'qty_*.numeric' => 'Quantity must be a numeric value.',
+
+            'unitPrice_*.required' => 'Unit price is required.',
+            'unitPrice_*.numeric' => 'Unit price must be a numeric value.',
+
+            'subTotal_*.required' => 'Subtotal is required.',
+            'subTotal_*.numeric' => 'Subtotal must be numeric.',
+        ]
+        );
 
             // Proceed with your logic if validation passes.
         } catch (\Illuminate\Validation\ValidationException $e) {

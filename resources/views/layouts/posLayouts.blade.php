@@ -18,7 +18,7 @@
     <!-- GOOGLE FONT -->
     <link href="{{ URL::asset('assets/css/fa.css') }}" rel='stylesheet' type='text/css' />
     <link href="{{ URL::asset('assets/css/arrows.css') }}" rel='stylesheet' type='text/css' />
-
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <script src="{{ URL::asset('assets/js/jquery-1.10.2.js') }}"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script> -->
     <!-- BOOTSTRAP SCRIPTS  -->
@@ -217,11 +217,31 @@
 </head>
 
 <body>
-    @if (empty($loginCnic))
-        @include('includes._posclientNavigation')
-    @else
-        @include('includes._parentNavigation')
-    @endif
+  <div class="container-fluid  text-white py-2 position-fixed start-0 w-100" style="background-color: #030351ff !important">
+  <div class="row align-items-center text-center">
+    
+  <div class="col-md-1">
+  <button style="margin-top:2%" class="btn btn-outline-light btn-sm rounded-circle">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+    </div>
+  <div class="col-md-3">
+    <h5 style="color:  #ffffffff" class="mb-0 fw-bold text-uppercase">Muhammad Murad - ( Sale Agent )</h5>
+    </div>
+    <!-- Left: Date -->
+     <div class="col-md-4">
+    <h5 style="color:  #ffffffff" class="mb-0 fw-bold text-uppercase">Date :  27th Oct 2025 |  Time : 9:45pm </h5>
+    </div>
+    
+    <!-- Center: Title -->
+   <div class="col-md-3">
+    <h5 style="color:  #ffffffff" class="mb-0 fw-bold text-uppercase">Order # - (ORD - 543810 )</h5>
+    </div>
+
+     <div class="col-md-1">
+   <button type="button" class="btn btn-sm btn-danger" style="margin-top:2%" >   <i class="fa-solid fa-power-off"></i></button></div>
+  </div>
+</div>
 
     <div class="container-fluid">
         @yield('content')
