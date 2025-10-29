@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('material_request_no', 150);
             $table->date('material_request_date');
             $table->integer('department_id');
-            $table->text('description');
+            $table->text('main_description');
             $table->integer('material_request_status')
                 ->default(1)
                 ->comment('1 = Pending, 2 = Approve, 3 = Rejected');

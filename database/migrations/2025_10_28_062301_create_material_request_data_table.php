@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('material_request_data', function (Blueprint $table) {
             $table->id();
             $table->integer('material_request_id');
-            $table->date('required_date');
             $table->integer('product_variant_id');
             $table->decimal('qty', 15, 3);
-            $table->text('sub_description');
             $table->integer('material_request_status')
                 ->default(1)
                 ->comment('1 = Pending, 2 = Approve, 3 = Rejected');

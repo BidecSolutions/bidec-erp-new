@@ -30,6 +30,7 @@ use App\Http\Controllers\{
     SizeController,
     ProductController,
     PurchaseOrderController,
+    MaterialRequestController,
     GoodReceiptNoteController,
     PaymentTypeController,
     SupplierController,
@@ -296,6 +297,27 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/purchase-orders/approvePurchaseOrderVoucher', [PurchaseOrderController::class, 'approvePurchaseOrderVoucher']);
     Route::post('/purchase-orders/purchaseOrderVoucherRejectAndRepost', [PurchaseOrderController::class, 'purchaseOrderVoucherRejectAndRepost']);
     Route::post('/purchase-orders/purchaseOrderVoucherActiveAndInactive', [PurchaseOrderController::class, 'purchaseOrderVoucherActiveAndInactive']);
+
+
+
+
+    Route::controller(MaterialRequestController::class)->group(function () {
+        Route::prefix('material-requests')->group(function () {
+            Route::get('/', 'index')->name('material-requests.index');
+            Route::get('/create', 'create')->name('material-requests.create');
+            Route::post('/store', 'store')->name('material-requests.store');
+            Route::post('/status/{id}', 'status')->name('material-requests.status');
+            Route::get('/{id}/edit', 'edit')->name('material-requests.edit');
+            Route::post('/update/{id}', 'update')->name('material-requests.update');
+            Route::get('/show', 'show')->name('payments.show');
+            Route::post('/destroy/{id}', 'destroy')->name('material-requests.destroy');
+        });
+    });
+
+
+    Route::post('/material-requests/approveMaterialRequestVoucher', [MaterialRequestController::class, 'approveMaterialRequestVoucher']);
+    Route::post('/material-requests/materialRequestVoucherRejectAndRepost', [MaterialRequestController::class, 'materialRequestVoucherRejectAndRepost']);
+    Route::post('/material-requests/materialRequestVoucherActiveAndInactive', [MaterialRequestController::class, 'materialRequestVoucherActiveAndInactive']);
 
 
 
@@ -644,4 +666,4 @@ Route::middleware(['auth'])->group(function () {
 
 
 include 'module/users.php';
-include 'module/store.php';
+//include 'module/store.php';
