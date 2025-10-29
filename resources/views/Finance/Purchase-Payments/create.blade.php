@@ -30,7 +30,7 @@
                     <div class="d-flex mt-2" style="gap:10px;">
                         <!-- PO / GRN Select -->
                         <select name="po_id" id="po_id" class="form-control entry-select" onchange="loadPODetails()">
-                            <option value="">Select GRN</option>
+                            <option value="">Select PO</option>
                             @foreach($pendingPOs as $po)
                                 <option value="{{ $po->id }}">
                                     {{ $po->po_no }} - {{ \App\Helpers\CommonHelper::changeDateFormat($po->po_date) }} - {{ $po->supplier_name }} - 
