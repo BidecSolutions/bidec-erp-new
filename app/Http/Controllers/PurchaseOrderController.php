@@ -93,15 +93,8 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
        
-       
-        try {
             $validatedData = $request->validate([
                 'po_date' => 'required|date',
-                'delivery_place' => 'required|string|max:255',
-                'quotation_no' => 'nullable|string|max:255',
-                // 'delivery_place' => 'required|string|max:255',
-                'quotation_no' => 'nullable|string|max:255',
-                // 'delivery_place' => 'required|string|max:255',
                 'quotation_no' => 'nullable|string|max:255',
                 'quotation_date' => 'required|date',
                 'main_description' => 'nullable|string|max:255',
@@ -111,19 +104,13 @@ class PurchaseOrderController extends Controller
                 'po_note' => 'nullable|string',
                 'poDataArray' => 'required|array',
                 'poDataArray.*' => 'required|integer',
-                'productId_*' => 'required|integer',
-                'qty_*' => 'required|numeric',
-                'unitPrice_*' => 'required|numeric',
-                'subTotal_*' => 'required|numeric',
+                
             ],
         [
             'po_date.required' => 'Purchase order date is required.',
             'po_date.date' => 'Purchase order date must be a valid date.',
 
-            'delivery_place.required' => 'Delivery place is required.',
-            'delivery_place.string' => 'Delivery place must be a valid string.',
-            'delivery_place.max' => 'Delivery place cannot exceed 255 characters.',
-
+          
             'quotation_no.required' => 'Quotation number is required.',
             'quotation_no.string' => 'Quotation number must be a string.',
             'quotation_no.max' => 'Quotation number cannot exceed 255 characters.',
@@ -157,32 +144,34 @@ class PurchaseOrderController extends Controller
             'subTotal_*.numeric' => 'Subtotal must be numeric.',
         ]
         );
+           foreach ($request->poDataArray as $index) {
+        $request->validate([
+            "productId_{$index}" => 'required|integer',
+            "qty_{$index}" => 'required|numeric|min:1',
+            "unitPrice_{$index}" => 'required|numeric|min:0',
+            "subTotal_{$index}" => 'required|numeric|min:0',
+        ], [
+            "productId_{$index}.required" => "Product ID (Row {$index}) is required.",
+            "qty_{$index}.required" => "Quantity (Row {$index}) is required.",
+            "qty_{$index}.min" => "Quantity (Row {$index}) must be at least 1.",
+            "unitPrice_{$index}.required" => "Unit Price (Row {$index}) is required.",
+            "unitPrice_{$index}.min" => "Unit Price (Row {$index}) must be at least 0.",
+            "subTotal_{$index}.required" => "Subtotal (Row {$index}) is required.",
+            "subTotal_{$index}.min" => "Subtotal (Row {$index}) must be at least 0.",
+        ]);
+    }
 
             // Proceed with your logic if validation passes.
-        } catch (\Illuminate\Validation\ValidationException $e) {
-             if ($this->isApi) {
-        return response()->json([
-            'message' => 'Validation failed',
-            'errors' => $e->errors(),
-        ], 422);
-    }
-    return redirect()->back()
-        ->withErrors($e->errors())
-        ->withInput();
-        }
-
+        
         // Begin transaction
         DB::beginTransaction();
 
         try {
-            //  dd($request);
-            //  dd($request);
-            // Insert data into PurchaseOrder
+        
             $purchaseOrder = new PurchaseOrder();
             $purchaseOrder->po_no = PurchaseOrder::VoucherNo();
             $purchaseOrder->po_date = $request->po_date;
-            // $purchaseOrder->delivery_place = $request->delivery_place;
-            // $purchaseOrder->delivery_place = $request->delivery_place;
+     
             $purchaseOrder->invoice_quotation_no = $request->quotation_no;
             $purchaseOrder->quotation_date = $request->quotation_date;
             $purchaseOrder->main_description = $request->main_description;
@@ -402,9 +391,11 @@ class PurchaseOrderController extends Controller
         // Fetch the purchase order details with the supplier name
         $purchaseOrder = DB::table('purchase_orders')
             ->join('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.id')
+         ->leftJoin('payment_types', 'purchase_orders.paymentType', '=', 'payment_types.id')
             ->select(
                 'purchase_orders.*',
-                'suppliers.name as supplier'
+                'suppliers.name as supplier',
+                      'payment_types.name as payment_type_name',
             )
             ->where('purchase_orders.id', $purchaseOrderId)
             ->first();
@@ -422,11 +413,15 @@ class PurchaseOrderController extends Controller
             ->where('purchase_order_id', $purchaseOrderId)
             ->get();
 
+            $company = DB::table('companies')
+        ->select('name', 'address', 'contact_no', 'school_logo')
+        ->where('status', 1) // assuming 1 = Active
+        ->first();
         // Fetch related purchase order details for display
         $purchaseOrderDetails = $purchaseOrder->purchaseOrderData;
 
         // Return the view with the purchase order details
-        return view($this->page . 'viewPurchaseOrderDetail', compact('purchaseOrder', 'purchaseOrderDetails'));
+        return view($this->page . 'viewPurchaseOrderDetail', compact('company','purchaseOrder', 'purchaseOrderDetails'));
     }
 
 

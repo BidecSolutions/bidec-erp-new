@@ -330,7 +330,7 @@
             <div class="modal-content ">
                 <div class="loadm-bx ">
                     <div class="model-logo">
-                        <img class="logo_mm" src="{{ CommonHelper::displaySchoolLogo() }}">
+                        <!-- <img class="logo_mm" src="{{ CommonHelper::displaySchoolLogo() }}"> -->
                         <h4><span class="modalTitle"></span></h4>
                         <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal"><i
                                 class="fal fa-times"></i></button>

@@ -69,6 +69,7 @@
                                     <th class="text-center">Invoice Quotation No</th>
                                     <th class="text-center">Quotation Date</th>
                                     <th class="text-center">Supplier Name</th>
+                
                                     <th class="text-center">Status</th>
                                     <th class="text-center hidden-print">Action</th>
                                 </tr>
