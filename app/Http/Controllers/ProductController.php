@@ -137,10 +137,9 @@ class ProductController extends Controller
     }
 
 
-
-    public function store(Request $request)
-    {
-        $request->validate([
+public function store(Request $request)
+{
+            $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
@@ -149,12 +148,11 @@ class ProductController extends Controller
             'icon' => 'nullable|image|max:2048',
             'cover_image' => 'nullable|image|max:2048',
             'variant_size_id.*' => 'nullable|exists:sizes,id',
-            'variant_amount.*' => 'nullable|numeric',
+            'variant_amount.*' => 'nullable|numeric|min:1',
             'variant_image.*' => 'nullable|image|max:2048',
             'variant_barcode.*' => 'nullable|string|max:255',
         ]);
-
-        try {
+        try { 
             $getCategoryDetail = Category::select('categories.*', 'chart_of_accounts.code')
                 ->join('chart_of_accounts', 'categories.acc_id', '=', 'chart_of_accounts.id')
                 ->where('categories.id', $request->category_id)
@@ -188,6 +186,7 @@ class ProductController extends Controller
             $product->acc_id = $chartOfAccountId;
             $product->category_id = $request->category_id;
             $product->brand_id = $request->brand_id;
+            $product->description  =$request->description;
             if ($request->filled('order_number')) {
                 $product->order_number = $request->order_number;
             } else {
@@ -201,11 +200,10 @@ class ProductController extends Controller
             $product->product_image = 'storage/app/public/' .$this->handleFileUpload($request, 'product', $productImagePath) ?: '';
             $product->icon_image = 'storage/app/public/' .$this->handleFileUpload($request, 'icon', $productImagePath) ?: '';
             $product->cover_image = 'storage/app/public/' .$this->handleFileUpload($request, 'cover_image', $productImagePath) ?: '';
-
-
             $product->save();
-
-            // Handling variants manually
+           
+        // Handling variants manually
+        if($request->has_variants == 1){
             foreach ($request->variant_size_id as $index => $sizeId) {
                 if ($sizeId) {
                     $variant = new ProductVariant();
@@ -217,10 +215,18 @@ class ProductController extends Controller
                     if ($request->hasFile("variant_image.$index")) {
                         $variant->variant_image = 'storage/app/public/' . $this->handleFileUpload($request, "variant_image.$index", $productImagePath);
                     }
-
                     $variant->save();
                 }
             }
+        }else{
+                $variant = new ProductVariant();
+                $variant->product_id = $product->id;
+                $variant->amount = $request->sell_price;
+                $variant->variant_barcode = $request->barcode;
+                $variant->variant_image = 'storage/app/public/' .$this->handleFileUpload($request, 'product', $productImagePath) ?: '';
+                $variant->size_id  =$request->size_id;
+                $variant->save();
+        }
             generate_json('products');
             generate_json('product_variants');
             return redirect()->route($this->page . 'index')->with('success', 'Product created successfully.');
@@ -442,10 +448,9 @@ class ProductController extends Controller
                         if ($request->hasFile("variant_image.$index")) {
                             $imagePath = $this->handleFileUpload($request, "variant_image.$index", 'product_images');
                             if ($imagePath) {
-                                $variantData['variant_image'] = 'storage/' . $imagePath;
+                                $variantData['variant_image'] = 'storage/app/public/' . $imagePath;
                             }
                         }
-
                         // Update or insert variant
                         $existingVariant = $existingVariants[$sizeId] ?? null;
                         if ($existingVariant) {
