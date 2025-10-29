@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderData;
+use App\Models\MaterialRequest;
+use App\Models\MaterialRequestData;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
-class PurchaseOrderController extends Controller
+class MaterialRequestController extends Controller
 {
     protected $isApi;
     protected $page;
@@ -19,7 +19,7 @@ class PurchaseOrderController extends Controller
         // Check if the request is for API
         $this->isApi = $request->is('api/*');
         // Define the base view path for web views
-        $this->page = 'purchase-orders.';
+        $this->page = 'material-requests.';
     }
 
     /**
@@ -46,8 +46,6 @@ class PurchaseOrderController extends Controller
             'categories' => storage_path('app/json_files/categories.json'),
             'brands' => storage_path('app/json_files/brands.json'),
             'sizes' => storage_path('app/json_files/sizes.json'),
-            'payment_types' => storage_path('app/json_files/payment_types.json'),
-            'suppliers' => storage_path('app/json_files/suppliers.json'),
             'departments' => storage_path('app/json_files/departments.json'),
         ];
 
@@ -60,7 +58,7 @@ class PurchaseOrderController extends Controller
 
         // Load data from JSON files
         $data = array_map(fn($path) => json_decode(file_get_contents($path), true), $jsonFiles);
-        ['products' => $products, 'product_variants' => $variants, 'categories' => $categories, 'brands' => $brands, 'sizes' => $sizes, 'payment_types' => $payment_types, 'suppliers' => $suppliers, 'departments' => $departments] = $data;
+        ['products' => $products, 'product_variants' => $variants, 'categories' => $categories, 'brands' => $brands, 'sizes' => $sizes, 'departments' => $departments] = $data;
 
         // Optimize the relationship building by indexing categories, brands, and sizes by their IDs
         $categoryMap = array_column($categories, 'name', 'id');
@@ -87,7 +85,7 @@ class PurchaseOrderController extends Controller
         // Apply status filter if provided
         $products = array_filter($products, fn($product) => $product['status'] == 1);
 
-        return view($this->page . 'create', compact('products', 'payment_types', 'suppliers', 'departments'));
+        return view($this->page . 'create', compact('products', 'departments'));
     }
 
     public function store(Request $request)
@@ -96,115 +94,43 @@ class PurchaseOrderController extends Controller
        
         try {
             $validatedData = $request->validate([
-                'po_date' => 'required|date',
-                'delivery_place' => 'required|string|max:255',
-                'quotation_no' => 'nullable|string|max:255',
-                // 'delivery_place' => 'required|string|max:255',
-                'quotation_no' => 'nullable|string|max:255',
-                // 'delivery_place' => 'required|string|max:255',
-                'quotation_no' => 'nullable|string|max:255',
-                'quotation_date' => 'required|date',
+                'mr_date' => 'required|date',
                 'main_description' => 'nullable|string|max:255',
-                'paymentType' => 'required|integer',
-                'payment_type_rate' => 'required|numeric',
-                'supplier_id' => 'required|integer',
-                'po_note' => 'nullable|string',
-                'poDataArray' => 'required|array',
-                'poDataArray.*' => 'required|integer',
+                'department_id' => 'required|integer',
+                'mrDataArray' => 'required|array',
+                'mrDataArray.*' => 'required|integer',
                 'productId_*' => 'required|integer',
                 'qty_*' => 'required|numeric',
-                'unitPrice_*' => 'required|numeric',
-                'subTotal_*' => 'required|numeric',
-            ],
-        [
-            'po_date.required' => 'Purchase order date is required.',
-            'po_date.date' => 'Purchase order date must be a valid date.',
-
-            'delivery_place.required' => 'Delivery place is required.',
-            'delivery_place.string' => 'Delivery place must be a valid string.',
-            'delivery_place.max' => 'Delivery place cannot exceed 255 characters.',
-
-            'quotation_no.required' => 'Quotation number is required.',
-            'quotation_no.string' => 'Quotation number must be a string.',
-            'quotation_no.max' => 'Quotation number cannot exceed 255 characters.',
-
-            'quotation_date.required' => 'Quotation date is required.',
-            'quotation_date.date' => 'Quotation date must be a valid date.',
-
-            'paymentType.required' => 'Payment type is required.',
-            'paymentType.integer' => 'Payment type must be an integer.',
-
-            'payment_type_rate.required' => 'Payment type rate is required.',
-            'payment_type_rate.numeric' => 'Payment type rate must be numeric.',
-
-            'supplier_id.required' => 'Supplier is required.',
-            'supplier_id.integer' => 'Supplier ID must be an integer.',
-
-            'poDataArray.required' => 'At least one product entry is required.',
-            'poDataArray.array' => 'PO data must be an array.',
-            'poDataArray.*.integer' => 'Each product entry must be an integer.',
-
-            'productId_*.required' => 'Product ID is required.',
-            'productId_*.integer' => 'Product ID must be an integer.',
-
-            'qty_*.required' => 'Quantity is required.',
-            'qty_*.numeric' => 'Quantity must be a numeric value.',
-
-            'unitPrice_*.required' => 'Unit price is required.',
-            'unitPrice_*.numeric' => 'Unit price must be a numeric value.',
-
-            'subTotal_*.required' => 'Subtotal is required.',
-            'subTotal_*.numeric' => 'Subtotal must be numeric.',
-        ]
-        );
+            ]);
 
             // Proceed with your logic if validation passes.
         } catch (\Illuminate\Validation\ValidationException $e) {
-             if ($this->isApi) {
-        return response()->json([
-            'message' => 'Validation failed',
-            'errors' => $e->errors(),
-        ], 422);
-    }
-    return redirect()->back()
-        ->withErrors($e->errors())
-        ->withInput();
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
         }
 
         // Begin transaction
         DB::beginTransaction();
 
         try {
-            //  dd($request);
-            //  dd($request);
-            // Insert data into PurchaseOrder
-            $purchaseOrder = new PurchaseOrder();
-            $purchaseOrder->po_no = PurchaseOrder::VoucherNo();
-            $purchaseOrder->po_date = $request->po_date;
-            // $purchaseOrder->delivery_place = $request->delivery_place;
-            // $purchaseOrder->delivery_place = $request->delivery_place;
-            $purchaseOrder->invoice_quotation_no = $request->quotation_no;
-            $purchaseOrder->quotation_date = $request->quotation_date;
-            $purchaseOrder->main_description = $request->main_description;
-            $purchaseOrder->paymentType = $request->paymentType;
-            $purchaseOrder->payment_type_rate = $request->payment_type_rate;
-            $purchaseOrder->supplier_id = $request->supplier_id;
-            $purchaseOrder->po_note = $request->po_note;
-            $purchaseOrder->save();
+            $materialRequest = new MaterialRequest();
+            $materialRequest->material_request_no = MaterialRequest::VoucherNo();
+            $materialRequest->material_request_date = $request->mr_date;
+            $materialRequest->main_description = $request->main_description;
+            $materialRequest->department_id = $request->department_id;
+            $materialRequest->save();
 
             // Insert data into PurchaseOrderData
-            foreach ($request->poDataArray as $key => $poData) {
+            foreach ($request->mrDataArray as $key => $mrData) {
                 $index = $key + 1; // Assuming data starts from index 1
 
-                $purchaseOrderData = new PurchaseOrderData();
-                $purchaseOrderData->purchase_order_id = $purchaseOrder->id;
-                $purchaseOrderData->product_variant_id = $request->input('productId_' . $index);
-                $purchaseOrderData->qty = $request->input('qty_' . $index);
-                $purchaseOrderData->unit_price = $request->input('unitPrice_' . $index);
-                $purchaseOrderData->sub_total = $request->input('subTotal_' . $index);
-                $purchaseOrderData->save();
-                // dd($purchaseOrderData);
-                // dd($purchaseOrderData);
+                $materialRequestData = new MaterialRequestData();
+                $materialRequestData->material_request_id = $materialRequest->id;
+                $materialRequestData->product_variant_id = $request->input('productId_' . $index);
+                $materialRequestData->qty = $request->input('qty_' . $index);
+                $materialRequestData->save();
             }
 
             //Commit transaction
@@ -212,7 +138,7 @@ class PurchaseOrderController extends Controller
 
             return redirect()
                 ->route($this->page . 'index')
-                ->with('success', 'Purchase Order Created Successfully');
+                ->with('success', 'Material Request Created Successfully');
         } catch (Exception $e) {
             // Rollback transaction
             DB::rollBack();
