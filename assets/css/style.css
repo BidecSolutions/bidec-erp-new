@@ -243,7 +243,7 @@ a {
     position: relative;
     text-transform: capitalize;
     margin-bottom: 16px;
-    color: #5E5873;
+    color: #000;
 }
 
 .mh h5:after {
@@ -252,7 +252,7 @@ a {
     left: 0;
     height: 4px;
     width: 100px;
-    background-color: #00AAFF;
+    background-color: #0b1a15;
     bottom: 0;
     border-radius: 8px;
 }
@@ -263,7 +263,7 @@ a {
     left: 90px;
     height: 4px;
     width: 50px;
-    background-color: #15389B;
+    background-color: #40888d;
     bottom: 0;
     border-radius: 15px;
     right: 0;
@@ -403,7 +403,7 @@ ul.m_list>li {
 }
 
 img.logo_m {
-    width: 35%;
+    width: 70%;
     transition: 0.5s;
 }
 
@@ -481,7 +481,7 @@ img.logo_f {
 
 .o_f a {
     font-size: 21px;
-    color: #5277e7;
+    color: #3f878c;
     display: block;
 }
 
@@ -2333,7 +2333,7 @@ input:checked+.slider-small:before {
     height: 3px;
 }
 
-.sidenavnr .settingListSb {
+/* .sidenavnr .settingListSb {
     padding: 10px 15px;
     text-decoration: none;
     font-size: 14px;
@@ -2343,9 +2343,46 @@ input:checked+.slider-small:before {
     text-align: left;
     width: 100%;
     overflow: hidden;
-    background: transparent linear-gradient(90deg, #173CA7 0%, #0B1F59 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #186f75 0%, #186f75bf 100%) 0% 0% no-repeat padding-box;
+    position: relative;
+} */
+
+/* Default (non-active) button */
+.sidenavnr .settingListSb {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #ffffff;
+    transition: 0.3s;
+    border-radius: 5px;
+    text-align: left;
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(90deg, #186f75 0%, #186f75bf 100%);
     position: relative;
 }
+
+/* Active menu item — darker, highlighted background */
+.sidenavnr .settingListSb.active,
+.sidenavnr .settingListSb:hover,
+.sidenavnr li.active > .sm-bx > .settingListSb {
+    background: linear-gradient(90deg, #0f4f54 0%, #0f4f54e6 100%);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
+/* Optional: Active state indicator (left border or glow) */
+.sidenavnr li.active > .sm-bx > .settingListSb::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: #00d4d4;
+    border-radius: 0 3px 3px 0;
+}
+
 
 .sm-bx button.active:after {
     content: '\f107';

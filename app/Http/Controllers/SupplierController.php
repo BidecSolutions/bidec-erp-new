@@ -131,24 +131,33 @@ class SupplierController extends Controller
     }
 
     public function store(Request $request)
-    {
-        try {
-            // Validate incoming request data
+    {   
             $validatedData = $request->validate([
-                'acc_id' => 'required|exists:chart_of_accounts,code',
-                'name' => 'required|string',
-                'ntn_no' => 'nullable|string',
-                'strn_no' => 'nullable|string',
-                'city_id' => 'required|exists:cities,id',
-                'physical_address' => 'nullable|string',
-                'cnic_no' => 'nullable|string',
-                'mobile_no' => 'nullable|string',
-                'phone_no' => 'nullable|string',
-                'email_address' => 'nullable|string',
-                'bank_name' => 'nullable|string',
-                'account_title' => 'nullable|string',
-                'account_no' => 'nullable|string'
-            ]);
+                'acc_id'           => 'required|exists:chart_of_accounts,code',
+                'name'             => 'required|string',
+                'ntn_no'           => 'nullable|string',
+                'strn_no'          => 'nullable|string',
+                'city_id'          => 'required|exists:cities,id',
+                'physical_address' => 'required|string',
+                'cnic_no'          => 'required|string',
+                'mobile_no'        => 'nullable|string',
+                'phone_no'         => 'required|string',
+                'email_address'    => 'required|string',
+                'bank_name'        => 'nullable|string',
+                'account_title'    => 'nullable|string',
+                'account_no'       => 'nullable|string'
+            ],
+            [
+            'acc_id.required' => 'Account ID is required.',
+            'acc_id.exists'   => 'The selected account ID does not exist in chart of accounts.',
+            'name.required'   => 'Name is required.',
+            'city_id.required' => 'City selection is required.',
+            'city_id.exists'   => 'The selected city is invalid.',
+            'physical_address.required' => 'Address is required.',
+            'cnic_no.required' => 'CNIC number is required.',
+            'phone_no.required' => 'Phone number is required.',
+            'email_address.required' => 'Email address is required.',
+        ]);
             $getAccountDetail = DB::table('chart_of_accounts')->where('code',$validatedData['acc_id'])->first();
             $chartOfAccount = new ChartOfAccount();
             $code = ChartOfAccount::GenerateAccountCode($validatedData['acc_id']);
@@ -199,7 +208,7 @@ class SupplierController extends Controller
             return redirect()
                 ->route($this->page . 'index')
                 ->with('success', 'Suppliers Created Successfully');
-        } catch (\Exception $e) {
+        try { } catch (\Exception $e) {
             // Handle unexpected errors
             return redirect()
                 ->back()

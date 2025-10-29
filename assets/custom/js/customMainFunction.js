@@ -1050,7 +1050,7 @@ function approveReturnVoucher(id) {
 function get_ajax_data() {
   var form = $('#list_data');
   var actionUrl = form.attr('action');
-  $('#data').html('<tr><td colspan="100"><div class="loader"></div></td></tr>');
+  $('#data').html('<tr><td colspan="100"><div class="preloader-list"><div class="preloader-list-logo"></div></div></td></tr>');
   var pages = $('#pages').val();
   $.ajax({
     type: "get",

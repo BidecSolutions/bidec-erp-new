@@ -1,3 +1,4 @@
+
 @media all {
   .clearable {
     background: url(http://i.imgur.com/z7ZSYjt.png) no-repeat right -10px center;
@@ -25,4 +26,102 @@
     width: 40%;
     float: right;
   }
+
+  :root {
+    --text-color: #004b46; /* your theme color */
+    --bg_white: #ffffff;
+  }
+
+  /* 🌟 Preloader Container */
+  #preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg_white);
+    z-index: 999999;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+
+  /* 🌟 Logo Text Styling */
+  .bidec-logo {
+    position: relative;
+    font-size: 8vw;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: transparent; /* Start transparent (only stroke visible) */
+    letter-spacing: 2px;
+    -webkit-text-stroke: 1px var(--text-color);
+    overflow: hidden;
+  }
+
+  /* 🌟 Logo Fill Animation */
+  .bidec-logo::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    color: var(--text-color);
+    -webkit-text-stroke: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    background: linear-gradient(to right, var(--text-color) 0%, var(--text-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: var(--text-color);
+    border-right: 3px solid var(--text-color);
+    animation: fillText 5s ease-in-out forwards;
+  }
+
+  /* 🌟 Animation Keyframes */
+  @keyframes fillText {
+    0% {
+      width: 0;
+      color: #ffffff; /* starts white */
+    }
+    50% {
+      color: var(--text-color);
+      width: 100%;
+    }
+    100% {
+      width: 100%;
+      color: var(--text-color);
+    }
+  }
+
+  /* 🌟 Fade Out When Page Loaded */
+  #preloader.fade-out {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* Preloader container */
+  .preloader-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px; /* Adjust height as needed */
+  }
+
+  /* Logo animation (rotate) */
+  .preloader-list-logo {
+    width: 60px;  /* Adjust size */
+    height: 60px; 
+    background: url('/assets/favicon-icon.webp') no-repeat center center;
+    background-size: contain;
+    animation: rotate-logo 1.5s linear infinite;
+  }
+
+  /* Rotation keyframes */
+  @keyframes rotate-logo {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 }
+
+
