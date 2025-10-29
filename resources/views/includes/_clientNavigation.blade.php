@@ -231,15 +231,15 @@
             <div class="collapse navbar-collapse js-navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown user-name-drop">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ substr('A', 0, 1) }}</a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ substr(auth()->user()->name, 0, 1) }}</a>
                         <div class="account-information dropdown-menu dropdown-menu-right">
                             <div class="account-inner">
                                 <div class="title">
-                                    <span>{{ substr('A', 0, 1) }}</span>
+                                    <span>{{ substr(auth()->user()->name, 0, 1) }}</span>
                                 </div>
                                 <div class="main-heading">
-                                    <h5>{{ 'A' }}</h5>
-                                    <p>{{ 'POS Management System' }}</p>
+                                    <h5>{{ auth()->user()->name }}</h5>
+                                    <p>{{ 'ERP Management System' }}</p>
                                     <ul class="list-unstyled" id="nav">
                                         @foreach (range(1, 7) as $i)
                                             <li><a href="#" rel="{{ url("/assets/css/color-$i.css") }}"><div class="color-{{ $i }}"></div></a></li>

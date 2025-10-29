@@ -99,6 +99,29 @@
     opacity: 0;
     visibility: hidden;
   }
+
+  /* Preloader container */
+  .preloader-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px; /* Adjust height as needed */
+  }
+
+  /* Logo animation (rotate) */
+  .preloader-list-logo {
+    width: 60px;  /* Adjust size */
+    height: 60px; 
+    background: url('/assets/favicon-icon.webp') no-repeat center center;
+    background-size: contain;
+    animation: rotate-logo 1.5s linear infinite;
+  }
+
+  /* Rotation keyframes */
+  @keyframes rotate-logo {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 }
 
 
