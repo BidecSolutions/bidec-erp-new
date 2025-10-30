@@ -279,7 +279,7 @@
 
                 <div class="modal-body">
                     <div class="mdel-bx">
-                        <div class="model-logo"><img style="width:15%;" src="{{ CommonHelper::displaySchoolLogo() }}">
+                        <div class="model-logo">
                             <h4 class="modal-title">Select The Company</h4>
                         </div>
                         <div class="row">
@@ -591,31 +591,6 @@ $('body').on('click', '#inactive-record', function () {
         }
     });
 });
-
-
-        // $('body').on('click', '#active-record', function() {
-        //     var userURL = $(this).data('url');
-        //     var trObj = $(this);
-        //     if (confirm("Are you sure you want to remove this?") == true) {
-        //         $.ajax({
-        //             url: userURL,
-        //             type: 'POST',
-        //             dataType: 'json',
-        //             data: {
-        //                 "_token": "{{ csrf_token() }}",
-        //             },
-        //             success: function(data) {
-        //                 if (typeof(data.success) == 'undefined') {
-        //                     alert(data.catchError);
-        //                     return;
-        //                 }
-        //                 alert(data.success);
-        //                 $("#filter-button").click();
-        //                 get_ajax_data();
-        //             }
-        //         });
-        //     }
-        // });
 
 
         $('body').on('click', '#unsuspended-record', function() {

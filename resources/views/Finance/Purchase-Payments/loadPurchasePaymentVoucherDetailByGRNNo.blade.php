@@ -12,7 +12,7 @@
             <table class="table table-bordered table-striped table-condensed">
                 <thead>
                     <tr>
-                        <th colspan="6">Item Summary</th>
+                        <th colspan="6">Item Summary Against GRN</th>
                     </tr>
                     <tr>
                         <th class="text-center">S.No</th>
@@ -60,7 +60,7 @@
             <table class="table table-bordered table-striped table-condensed">
                 <thead>
                     <tr>
-                        <th colspan="5">Payment Summary</th>
+                        <th colspan="5">Payment Summary Against GRN</th>
                     </tr>
                     <tr>
                         <th class="text-center">S.No</th>
@@ -105,7 +105,7 @@
 @php
     $remainingAmount = $totalItemSummaryAmount - $totalPaidAmount;
 @endphp
-
+<input type="hidden" name="po_id_two" id="po_id_two" value="{{$supplierDetail->id}}" />
 <div class="row">
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
         <label>Voucher Type</label>

@@ -17,15 +17,15 @@ class UserController extends Controller
     public function createMainMenuTitleForm()
     {
         $menuType = array(
-            '1' => 'User',
+            '1' => 'Dashboard',
             '2' => 'Purchase',
-            '3' => 'Sales',
-            '4' => 'Store',
+            '3' => 'Store',
+            '4' => 'Productions',
             '5' => 'Finance',
-            '6' => 'Setting',
+            '6' => 'Sale',
             '7' => 'Reports',
-            '8' => 'Dashboard',
-            '9' => 'HR'
+            '8' => 'Master Tables',
+            '9' => 'Users'
         );
         return view('Users.createMainMenuTitleForm', compact('menuType'));
     }

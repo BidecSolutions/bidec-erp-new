@@ -2,16 +2,15 @@
     $m = 1;
     use App\Helpers\CommonHelper;
     $menuType = array(
-        '1' => 'User',
-        '2' => 'Finance',
-        '3' => 'Purchase',
-        '4' => 'Store',
-        '5' => 'Sale',
-        '6' => 'HR',
+        '1' => 'Dashboard',
+        '2' => 'Purchase',
+        '3' => 'Store',
+        '4' => 'Productions',
+        '5' => 'Finance',
+        '6' => 'Sale',
         '7' => 'Reports',
-        '8' => 'Dashboard',
-        '9' => 'General Setting',
-        '10' => 'General Option'
+        '8' => 'Master Tables',
+        '9' => 'Users'
     );
     // Read the JSON file
     $jsonString = DB::table('sub_menus')->get()->toJson();

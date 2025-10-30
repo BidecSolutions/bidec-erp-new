@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('masking_id');
             $table->string('masking_password');
             $table->string('masking_key');
+            $table->string('school_logo');
             $table->decimal('logout_automatic_timing',15,3)->default(0);
             $table->integer('server_on_off')->default(1)->comment('1 = On, 2 = Off');
             $table->double('longitude');

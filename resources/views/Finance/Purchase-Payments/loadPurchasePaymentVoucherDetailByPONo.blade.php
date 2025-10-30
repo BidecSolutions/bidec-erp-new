@@ -12,7 +12,7 @@
             <table class="table table-bordered table-striped table-condensed">
                 <thead>
                     <tr>
-                        <th colspan="6">Item Summary</th>
+                        <th colspan="6">Item Summary Against PO</th>
                     </tr>
                     <tr>
                         <th class="text-center">S.No</th>
@@ -60,7 +60,7 @@
             <table class="table table-bordered table-striped table-condensed">
                 <thead>
                     <tr>
-                        <th colspan="5">Payment Summary</th>
+                        <th colspan="5">Payment Summary Against PO</th>
                     </tr>
                     <tr>
                         <th class="text-center">S.No</th>

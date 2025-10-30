@@ -761,7 +761,7 @@ ul.ban-list>li {
     font-size: 25px;
     border-radius: 50%;
     margin: auto;
-    background: transparent linear-gradient(90deg, #173CA7 0%, #0B1F59 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(to right, #186f75 0%, #186f75bf 100%) 0% 0% no-repeat padding-box;
 }
 
 .banq-box h3 {
@@ -807,7 +807,7 @@ img.circle {
 .banq-box:hover {
     box-shadow: 0 4px 24px 0 rgb(34 41 47 / 40%);
     border: 4px solid #0c205b00;
-    background: #0c205bbd;
+    background: linear-gradient(90deg, #0f4f54 0%, #0f4f54e6 100%);
 }
 
 .banq-box:hover h3 {
@@ -2351,8 +2351,8 @@ input:checked+.slider-small:before {
 .sidenavnr .settingListSb {
     padding: 10px 15px;
     text-decoration: none;
-    font-size: 14px;
-    color: #ffffff;
+    font-size: 13px;
+    color: #000;
     transition: 0.3s;
     border-radius: 5px;
     text-align: left;
@@ -2360,6 +2360,7 @@ input:checked+.slider-small:before {
     overflow: hidden;
     background: linear-gradient(90deg, #00000073 0%, #dddddd8f 100%);
     position: relative;
+    font-weight: bold;
 }
 
 /* Active menu item — darker, highlighted background */

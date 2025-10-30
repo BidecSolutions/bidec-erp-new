@@ -3,16 +3,15 @@
 
     // Menu type mapping (consider moving this to a config or helper file if reused)
     $menuType = [
-        '1' => 'User',
+        '1' => 'Dashboard',
         '2' => 'Purchase',
-        '3' => 'Sales',
-        '4' => 'Store',
+        '3' => 'Store',
+        '4' => 'Productions',
         '5' => 'Finance',
-        '6' => 'Setting',
+        '6' => 'Sale',
         '7' => 'Reports',
-        '8' => 'Dashboard',
-        '9' => 'HR',
-        '10' => 'General Option'
+        '8' => 'Master Tables',
+        '9' => 'Users'
     ];
 
     // Fetch menu types and submenus in one go
@@ -22,7 +21,7 @@
     // Cache menu types and submenus to reduce DB queries
     $cacheKeyMenuTypes = 'menu_types_with_icons';
     $getMenuTypesTwo = Cache::remember($cacheKeyMenuTypes, 60, function () {
-        return DB::table('menus')->select('menu_type', 'menu_icon')->distinct()->get();
+        return DB::table('menus')->select('menu_type', 'menu_icon')->orderBy('menu_type')->distinct()->get();
     });
 
     $cacheKeySubMenus = 'active_sub_menus';
@@ -31,16 +30,14 @@
     });
 
     $mainMenus = Cache::remember('main_menus', 60, fn() =>
-        DB::connection('mysql')->table('menus')->select('menu_type', 'menu_icon')->distinct()->get()
+        DB::connection('mysql')->table('menus')->select('menu_type', 'menu_icon')->orderBy('menu_type')->distinct()->get()
     );
 
     $allSubMenus = Cache::remember('active_sub_menus_all', 60, fn() =>
         DB::connection('mysql')->table('sub_menus')->where('status', 1)->get()
     );
 
-    $allMenuItems = Cache::remember('menu_items_all', 60, fn() =>
-        DB::connection('mysql')->table('menus')->get()
-    );
+    $allMenuItems = DB::connection('mysql')->table('menus')->orderBy('menu_type')->get();
     $currentRoute = Route::currentRouteName();
 @endphp
 
