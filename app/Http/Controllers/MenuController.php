@@ -92,7 +92,8 @@ class MenuController extends Controller
             '7' => 'Reports',
             '8' => 'Dashboard',
             '9' => 'General Setting',
-            '10' => 'General Option'
+            '10' => 'General Option',
+            '11' => 'Production'
         );
         return view($this->page.'create',compact('mainTitle','pageTitle','menuType','pageUrl'));
     }
@@ -178,7 +179,8 @@ class MenuController extends Controller
             '7' => 'Reports',
             '8' => 'Dashboard',
             '9' => 'General Setting',
-            '10' => 'General Option'
+            '10' => 'General Option',
+            '11' => 'Production'
         );
         return view($this->page.'edit', compact('menu','mainTitle','pageTitle','menuType','pageUrl'));
     }

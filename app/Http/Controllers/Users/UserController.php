@@ -25,7 +25,8 @@ class UserController extends Controller
             '6' => 'Setting',
             '7' => 'Reports',
             '8' => 'Dashboard',
-            '9' => 'HR'
+            '9' => 'HR',
+            '11' => 'Production'
         );
         return view('Users.createMainMenuTitleForm', compact('menuType'));
     }

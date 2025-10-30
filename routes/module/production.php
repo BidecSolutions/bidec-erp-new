@@ -4,9 +4,9 @@
 
     Route::controller(BOMController::class)->group(function () {
         Route::prefix('bom')->group(function () {
-            Route::get('/', 'payableAndReceivableReportSettingIndex')->name('bom.index');
-            Route::get('/create', 'payableAndReceivableReportSettingCreate')->name('bom.create');
-            Route::post('/store', 'payableAndReceivableReportSettingStore')->name('bom.store');
+            Route::get('/', 'index')->name('bom.index');
+            Route::get('/create', 'create')->name('bom.create');
+            Route::post('/store', 'store')->name('bom.store');
         });
     });
 ?>

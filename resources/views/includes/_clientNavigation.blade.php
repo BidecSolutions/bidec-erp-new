@@ -12,7 +12,8 @@
         '7' => 'Reports',
         '8' => 'Dashboard',
         '9' => 'HR',
-        '10' => 'General Option'
+        '10' => 'General Option',
+        '11' => 'Production'
     ];
 
     // Fetch menu types and submenus in one go
