@@ -118,6 +118,16 @@
                                     </div>
                             </div>
 
+                             <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label for="name">Product Type</label>
+                                    <select name="product_type" id="product_type" class="select2 form-control ">
+                                            <option value="1">Finish Product</option>
+                                            <option value="2">Row Product</option>
+                                    </select>
+                                    </div>
+                                </div>
+
                             <div class="col-lg-4" style="line-height: 5;">
                                 <div class="form-group">
                                     <label for="name">Has Variant</label>

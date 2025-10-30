@@ -17,7 +17,7 @@
             </div>
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <label>Department Detail</label>
+                    <label>Department</label>
                     <select name="department_id" id="department_id" class="form-control select2"
                         onchange="loadMaterialRequestDetailUsingDepartmentId()">
                         <option value="">Select Department</option>
@@ -40,7 +40,7 @@
 
             var departmentId = $('#department_id').val();
             if (departmentId === '') {
-                alert('Please Select Department Detail');
+                alert('Please Select Department');
                 $('.loadStoreChallanDetailSection').html('');
             } else {
                 $('.loadStoreChallanDetailSection').html(
@@ -87,7 +87,7 @@
 
             // You can replace this with an AJAX call or other functionality
             $.ajax({
-                url: '/good-receipt-notes/processPurchaseOrder',
+                url: '/store-challans/processPurchaseOrder',
                 type: 'POST',
                 data: {
                     orderId: selectedOrderId,

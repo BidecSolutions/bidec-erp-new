@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\StoreChallan;
 use App\Models\StoreChallanData;
 use App\Models\MaterialRequest;
+use App\Models\MaterialRequestData;
 use App\Models\Fara;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -77,38 +78,40 @@ class StoreChallanController extends Controller
         }
 
         // 🔸 Fetch material requests using query builder
-        $materialRequests = DB::table('material_request_datas as mrd')
-            ->join('material_requests as mr', 'mr.id', '=', 'mrd.material_request_id')
-            ->join('product_variants as pv', 'mrd.product_variant_id', '=', 'pv.id')
-            ->join('sizes as s', 'pv.size_id', '=', 's.id')
-            ->join('products as p', 'pv.product_id', '=', 'p.id')
-            ->leftJoin('store_challan_datas as scd', 'mrd.id', '=', 'scd.material_request_data_id')
-            ->where('mr.department_id', $departmentId)
-            ->where('mr.company_id', $companyId)
-            ->where('mr.location_id', $companyLocationId)
-            ->where('mr.status', 1)
-            ->where('mr.material_request_status', 2)
-            ->select(
-                'mrd.id',
-                'mrd.material_request_id',
-                'mr.material_request_no',
-                'mr.material_request_date',
-                'p.name as product_name',
-                's.name as size_name',
-                'mrd.qty as material_request_qty',
-                DB::raw('COALESCE(SUM(scd.issue_qty), 0) as previous_issue_qty')
-            )
-            ->groupBy(
-                'mrd.id',
-                'mrd.material_request_id',
-                'mr.material_request_no',
-                'mr.material_request_date',
-                'p.name',
-                's.name',
-                'mrd.qty'
-            )
-            ->havingRaw('COALESCE(SUM(scd.issue_qty), 0) < mrd.qty')
-            ->get();
+            $materialRequests = DB::table('material_request_datas as mrd')
+                ->join('material_requests as mr', 'mr.id', '=', 'mrd.material_request_id')
+                ->join('product_variants as pv', 'mrd.product_variant_id', '=', 'pv.id')
+                ->join('sizes as s', 'pv.size_id', '=', 's.id')
+                ->join('products as p', 'pv.product_id', '=', 'p.id')
+                ->leftJoin('store_challan_datas as scd', 'mrd.id', '=', 'scd.material_request_data_id')
+                ->where('mr.department_id', $departmentId)
+                ->where('mr.company_id', $companyId)
+                ->where('mr.location_id', $companyLocationId)
+                ->where('mr.status', 1)
+                ->where('mr.material_request_status', 2)
+                ->select(
+                    'mrd.id',
+                    'mrd.material_request_id',
+                    'mr.material_request_no',
+                    'mr.material_request_date',
+                    'p.name as product_name',
+                    's.name as size_name',
+                    'pv.id as variant_id',
+                    'mrd.qty as material_request_qty',
+                    DB::raw('COALESCE(SUM(scd.issue_qty), 0) as previous_issue_qty')
+                )
+                ->groupBy(
+                    'mrd.id',
+                    'mrd.material_request_id',
+                    'mr.material_request_no',
+                    'mr.material_request_date',
+                    'p.name',
+                    's.name',
+                    'pv.id',
+                    'mrd.qty'
+                )
+                ->havingRaw('COALESCE(SUM(scd.issue_qty), 0) < mrd.qty')
+                ->get();
 
         // 🔸 Handle empty results
         if ($materialRequests->isEmpty()) {
@@ -130,42 +133,56 @@ class StoreChallanController extends Controller
         ]);
     }
 
-
-
-
     public function store(Request $request)
     {
         // Begin transaction
         DB::beginTransaction();
-
         try {
             // Insert data into PurchaseOrder
-            $goodReceiptNote = new GoodReceiptNote();
-            $goodReceiptNote->supplier_id = $request->input('supplier_id');
-            $goodReceiptNote->grn_no = GoodReceiptNote::VoucherNo();
-            $goodReceiptNote->grn_date = $request->grn_date;
-            $goodReceiptNote->description = $request->description;
-            $goodReceiptNote->save();
+            $storeChallan = new StoreChallan();
+            $storeChallan->material_request_id = $request->input('material_request_id_1');
+            $storeChallan->department_id = $request->input('department_id');
+            $storeChallan->store_challan_no = storeChallan::VoucherNo();
+            $storeChallan->store_challan_date = $request->store_challan_date;
+            $storeChallan->description = $request->description;
+            $storeChallan->save();
+            
 
-            // Insert data into PurchaseOrderData
-            foreach ($request->poRowsArray as $poraData) {
+         foreach ($request->mrRowsArray as $poraData) {
+            $storeChallanData = new storeChallanData();
+            $storeChallanData->material_request_data_id = $request->input('mr_data_id_' . $poraData);
+            $storeChallanData->store_challan_id = $storeChallan->id;
+            $storeChallanData->product_variant_id = $request->input('variant_id_' . $poraData);
+            $storeChallanData->issue_qty = $request->input('issue_qty_' . $poraData);
+            $storeChallanData->receive_qty = 0.00;
+            $storeChallanData->data_description = $request->input('data_description_' . $poraData);
+            $storeChallanData->save();
 
-                $goodReceiptNoteData = new GoodReceiptNoteData();
-                $goodReceiptNoteData->good_receipt_note_id = $goodReceiptNote->id;
-                $goodReceiptNoteData->po_id = $request->input('purchase_order_id_' . $poraData);
-                $goodReceiptNoteData->po_data_id = $request->input('po_data_id_' . $poraData);
-                $goodReceiptNoteData->quotation_no = $request->input('quotation_no_' . $poraData);
-                $goodReceiptNoteData->expiry_date = $request->input('expiry_date_' . $poraData);
-                $goodReceiptNoteData->receive_qty = $request->input('receive_qty_' . $poraData);
-                $goodReceiptNoteData->save();
+            $remainingQty = $request->input('remaining_qty_' . $poraData);
+            $issueQty = $request->input('issue_qty_' . $poraData);
+
+                if ($remainingQty == $issueQty) {
+                    MaterialRequestData::where('id', $request->input('mr_data_id_' . $poraData))
+                        ->update(['store_challan_status' => 2]);
+                }
+             }
+
+            $materialRequestId = $request->input('material_request_id_1');
+            $totalRows = MaterialRequestData::where('material_request_id', $materialRequestId)->count();
+            $completedRows = MaterialRequestData::where('material_request_id', $materialRequestId)
+                ->where('store_challan_status', 2)
+                ->count();
+
+            if ($totalRows > 0 && $totalRows == $completedRows) {
+                MaterialRequest::where('id', $materialRequestId)
+                    ->update(['store_challan_status' => 2]);
             }
-
             //Commit transaction
             DB::commit();
 
             return redirect()
                 ->route($this->page . 'index')
-                ->with('success', 'Good Receipt Note Created Successfully');
+                ->with('success', 'Store Challan Created Successfully');
         } catch (Exception $e) {
             // Rollback transaction
             DB::rollBack();
@@ -191,47 +208,45 @@ class StoreChallanController extends Controller
         }
 
         // Fetch the GoodReceiptNote by ID using with() to eager load the related data
-        $goodReceiptNote = GoodReceiptNote::with('goodReceiptNoteData') // This will now work after defining the relationship
+        $storeChallan = StoreChallan::with('storeChallanData') // This will now work after defining the relationship
             ->where('company_id', $companyId)
-            ->where('company_location_id', $companyLocationId)
+            ->where('location_id', $companyLocationId)
             ->findOrFail($id);
-
         // Fetch supplier list using distinct suppliers related to the current purchase orders
-
-
-        $getSupplierList = Supplier::distinct()
-            ->join('purchase_orders as po', 'po.supplier_id', '=', 'suppliers.id')
-            ->select('po.supplier_id as id', 'suppliers.name')
-            ->where('po.company_id', $companyId)
-            ->where('po.company_location_id', $companyLocationId)
+     
+        $getDepartmentList = Department::distinct()
+            ->join('material_requests as mr', 'mr.department_id', '=', 'departments.id')
+            ->select('mr.department_id as id',  'departments.department_name')
+            ->where('mr.company_id', $companyId)
+            ->where('mr.location_id', $companyLocationId)
             ->get();
 
-        // Fetch purchase order details for the selected supplier
-        $purchaseOrders = PurchaseOrder::where('supplier_id', $goodReceiptNote->supplier_id)
+
+        // Fetch material request details for the selected department
+        $materialRequest = MaterialRequest::where('department_id', $storeChallan->department_id)
             ->where('company_id', $companyId)
-            ->where('company_location_id', $companyLocationId)
-            ->with('purchaseOrderData') // Assuming this is the relationship for the purchase orders data
+            ->where('location_id', $companyLocationId)
+            ->with('materialRequestData') // Assuming this is the relationship for the purchase orders data
             ->get();
 
         // Return the edit view with the fetched data
         return view("{$this->page}edit")->with([
-            'goodReceiptNote' => $goodReceiptNote,
-            'getSupplierList' => $getSupplierList,
-            'purchaseOrders' => $purchaseOrders,
+            'storeChallan' => $storeChallan,
+            'getDepartmentList' => $getDepartmentList,
+            'materialRequest' => $materialRequest,
         ]);
     }
-    public function getPurchaseOrdersForEdit(Request $request)
-    {
-        $supplierId = $request->input('supplierId');
-        $goodReceiptNoteId = $request->input('goodReceiptNoteId');
+    public function getMaterialRequestsForEdit(Request $request)
+      {
+        $deparmentId = $request->input('deparmentId');
+        $storeChallanId = $request->input('storeChallanId');
         $companyId = Session::get('company_id');
         $companyLocationId = Session::get('company_location_id');
 
-        if (!$supplierId || !$goodReceiptNoteId) {
-            return response()->json(['success' => false, 'message' => 'Supplier ID and Good Receipt Note ID are required'], 400);
+        if (!$deparmentId || !$storeChallanId) {
+            return response()->json(['success' => false, 'message' => 'Department ID and Store Challan Id ID are required'], 400);
         }
-
-        // Step 1: Fetch all unassigned purchase orders
+        // Step 1: Fetch all unassigned material
         $unassignedPOs = DB::select(
             'SELECT 
                 pod.id,
@@ -269,7 +284,7 @@ class StoreChallanController extends Controller
             HAVING 
                 COALESCE(SUM(grnd.receive_qty), 0) < pod.qty',
             [
-                'supplierId' => $supplierId,
+                'deparmentId' => $deparmentId,
                 'companyId' => $companyId,
                 'companyLocationId' => $companyLocationId
             ]
@@ -529,31 +544,31 @@ class StoreChallanController extends Controller
             $fromDate = $request->input('from_date');
             $toDate = $request->input('to_date');
 
-
             // Query builder to fetch data with a join between 'good_receipt_notes' and 'suppliers' table
-            $goodReceiptNotes = DB::table('good_receipt_notes as grn')
-                ->join('suppliers as s', 'grn.supplier_id', '=', 's.id')
-                ->select('grn.*', 's.name as supplier_name')
-                ->where('grn.process_type', 1)
-                ->where('grn.company_id', $companyId)
-                ->where('grn.company_location_id', $companyLocationId)
-                ->whereBetween('grn.grn_date', [$fromDate, $toDate]);
+            $storeChallans = DB::table('store_challans as sc')
+                ->join('departments as d', 'sc.department_id', '=', 'd.id')
+                ->select('sc.*', 'd.department_name as department_name')
+                ->where('sc.company_id', $companyId)
+                ->where('sc.location_id', $companyLocationId)
+                ->whereBetween('sc.store_challan_date', [$fromDate, $toDate]);
 
+             
             // Apply status filter if provided
             if ($status) {
-                $goodReceiptNotes->where('grn.status', $status);
+                $storeChallans->where('sc.status', $status);
             }
 
             // Execute the query and get the results
-            $goodReceiptNotes = $goodReceiptNotes->get();
+            $storeChallans = $storeChallans->get();
+        // dd($storeChallans);
 
             // If rendering in a web view (non-API requests)
             if (!$this->isApi) {
-                return webResponse($this->page, 'indexAjax', compact('goodReceiptNotes'));
+                return webResponse($this->page, 'indexAjax', compact('storeChallans'));
             }
 
             // Return JSON response for API requests
-            return jsonResponse($goodReceiptNotes, 'Good Receipt Notes Retrieved Successfully', 'success', 200);
+            return jsonResponse($storeChallans, 'Store Challans Retrieved Successfully', 'success', 200);
         }
 
         // For non-API requests, return the view for the page
@@ -564,27 +579,27 @@ class StoreChallanController extends Controller
     {
         try {
             // Find the GoodReceiptNote by ID
-            $goodReceiptNote = GoodReceiptNote::find($id);
+            $storeChallan = StoreChallan::find($id);
 
             // Check if record exists
-            if (!$goodReceiptNote) {
-                Log::error("GoodReceiptNote with ID $id not found.");
-                return response()->json(['error' => 'Good Receipt Note not found.'], 404);
+            if (!$storeChallan) {
+                Log::error("storeChallan with ID $id not found.");
+                return response()->json(['error' => 'store Challan Note not found.'], 404);
             }
             DB::beginTransaction();
 
             // Debugging Log
-            Log::info("Updating status for GoodReceiptNote ID: $id");
+            Log::info("Updating status for storeChallan ID: $id");
 
             // Update the status
-            $goodReceiptNote->status = 1;
-            $goodReceiptNote->save(); // Save the update
+            $storeChallan->status = 1;
+            $storeChallan->save(); // Save the update
 
             // Commit transaction
             DB::commit();
 
 
-            return response()->json(['success' => 'Good Receipt Note marked as Active successfully!']);
+            return response()->json(['success' => 'Store Challan marked as Active successfully!']);
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction on failure
             Log::error("Error updating GoodReceiptNote: " . $e->getMessage()); // Log error for debugging
@@ -597,19 +612,19 @@ class StoreChallanController extends Controller
     public function destroy($id)
     {
         // Find the GoodReceiptNote by ID
-        $goodReceiptNote = GoodReceiptNote::find($id);
+        $storeChallan = StoreChallan::find($id);
 
         // Begin transaction
         DB::beginTransaction();
 
         try {
             // Delete the GoodReceiptNote
-            $goodReceiptNote->status = 2;
-            $goodReceiptNote->save();
+            $storeChallan->status = 2;
+            $storeChallan->save();
             // Commit transaction
             DB::commit();
 
-            return response()->json(['success' => 'Good Receipt Note marked as inactive successfully!']);
+            return response()->json(['success' => 'Store Challan  marked as inactive successfully!']);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'An error occurred while deactivating the Good Receipt Note.'], 500);
@@ -631,7 +646,7 @@ class StoreChallanController extends Controller
                 ['id', '=', $id],
                 ['company_id', '=', $companyId],
                 ['company_location_id', '=', $companyLocationId]
-            ])->update(['grn_status' => 2]);
+            ])->update(['store_challan_status' => 2]);
 
         // Fetch Good Receipt Note details
         $goodReceiptNoteDetail = DB::table('good_receipt_notes')
@@ -843,14 +858,14 @@ class StoreChallanController extends Controller
         $voucherTypeStatus = $request->input('voucherTypeStatus');
         $value = $request->input('value');
 
-        DB::table('good_receipt_notes')->where('id', $id)->where('company_id', $companyId)->where('company_location_id', $companyLocationId)->update(['grn_status' => $value]);
+        DB::table('store_challans')->where('id', $id)->where('company_id', $companyId)->where('location_id', $companyLocationId)->update(['store_challan_status' => $value]);
         echo 'Done';
     }
 
     public function goodReceiptNoteVoucherActiveAndInactive(Request $request)
     {
         $companyId = Session::get('company_id');
-        $companyLocationId = Session::get('company_location_id');
+        $companyLocationId = Session::get('location_id');
         $id = $request->input('id');
         $status = $request->input('status');
         $voucherTypeStatus = $request->input('voucherTypeStatus');

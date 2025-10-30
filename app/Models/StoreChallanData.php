@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\Session;
 
 class StoreChallanData extends Model
 {
-    public $table = 'grn_datas';
+    public $table = 'store_challan_datas';
     public $timestamps = false;
     use HasFactory;
+     protected $fillable = [];
     // get active record
     function scopeStatus($query, $status)
     {
@@ -24,7 +25,7 @@ class StoreChallanData extends Model
     {
         static::creating(function ($model) {
             $model->company_id = Session::get('company_id');
-            $model->company_location_id = Session::get('company_location_id');
+            $model->location_id = Session::get('company_location_id');
             $model->status = 1;
             $model->created_by = Auth::user()->name;
             $model->created_date = date('Y-m-d');

@@ -90,8 +90,6 @@ class MaterialRequestController extends Controller
 
     public function store(Request $request)
     {
-       
-       
         try {
             $validatedData = $request->validate([
                 'mr_date' => 'required|date',
@@ -409,7 +407,7 @@ class MaterialRequestController extends Controller
         $voucherTypeStatus = $request->input('voucherTypeStatus');
         $value = $request->input('value');
 
-        DB::table('material_requests')->where('id', $id)->where('company_id', $companyId)->where('location_id', $companyLocationId)->update(['mr_status' => 2]);
+        DB::table('material_requests')->where('id', $id)->where('company_id', $companyId)->where('location_id', $companyLocationId)->update(['material_request_status' => 2]);
         echo 'Done';
     }
 
@@ -422,7 +420,7 @@ class MaterialRequestController extends Controller
         $voucherTypeStatus = $request->input('voucherTypeStatus');
         $value = $request->input('value');
 
-        DB::table('material_requests')->where('id', $id)->where('company_id', $companyId)->where('location_id', $companyLocationId)->update(['mr_status' => $value]);
+        DB::table('material_requests')->where('id', $id)->where('company_id', $companyId)->where('location_id', $companyLocationId)->update(['material_request_status' => $value]);
         echo 'Done';
     }
 
