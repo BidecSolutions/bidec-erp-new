@@ -22,19 +22,30 @@
             <div class="row">
                 <div class="col-lg-12">
                     <label>
-                        <input type="radio" name="entry_option" value="1" onchange="toggleEntryType()"> GRN
-                        <input type="radio" name="entry_option" value="2" checked onchange="toggleEntryType()"> Purchase Invoice
+                        <!-- <input type="radio" name="entry_option" value="1" onchange="toggleEntryType()"> PO -->
+                        <input type="radio" name="entry_option" value="3" checked onchange="toggleEntryType()"> GRN
+                        <input type="radio" name="entry_option" value="2" onchange="toggleEntryType()"> Purchase Invoice
                     </label>
 
                     <!-- Both selects in one row -->
                     <div class="d-flex mt-2" style="gap:10px;">
                         <!-- PO / GRN Select -->
-                        <select name="grn_id" id="grn_id" class="form-control entry-select" onchange="loadGRNDetails()">
-                            <option value="">Select GRN</option>
+                        <!-- <select name="po_id" id="po_id" class="form-control entry-select" onchange="loadPODetails()">
+                            <option value="">Select PO</option>
                             @foreach($pendingPOs as $po)
-                                <option value="{{ $po->grn_id }}">
+                                <option value="{{ $po->id }}">
                                     {{ $po->po_no }} - {{ \App\Helpers\CommonHelper::changeDateFormat($po->po_date) }} - {{ $po->supplier_name }} - 
                                     {{ $po->grn_no ? $po->grn_no . ' - ' . \App\Helpers\CommonHelper::changeDateFormat($po->grn_date) : 'GRN not created' }}
+                                </option>
+                            @endforeach
+                        </select> -->
+                        
+                        <select name="grn_id" id="grn_id" class="form-control entry-select" onchange="loadGRNDetails()">
+                            <option value="">Select GRN</option>
+                            @foreach($pendingGrns as $grn)
+                                <option value="{{ $grn->grn_id }}">
+                                    {{ $grn->po_no }} - {{ \App\Helpers\CommonHelper::changeDateFormat($grn->po_date) }} - {{ $grn->supplier_name }} - 
+                                    {{ $grn->grn_no ? $grn->grn_no . ' - ' . \App\Helpers\CommonHelper::changeDateFormat($grn->grn_date) : 'GRN not created' }}
                                 </option>
                             @endforeach
                         </select>
@@ -83,23 +94,29 @@
         if(type === '1') {
             $('#po_id').show().prop('required', true).prop('disabled', false);
             $('#invoice_id').hide().prop('required', false).prop('disabled', true).val(null).trigger('change');
-        } else {
+            $('#grn_id').hide().prop('required', false).prop('disabled', true).val('').trigger('change');
+        } else if(type === '2') {
             $('#invoice_id').show().prop('required', true).prop('disabled', false);
+            $('#po_id').hide().prop('required', false).prop('disabled', true).val('').trigger('change');
+            $('#grn_id').hide().prop('required', false).prop('disabled', true).val('').trigger('change');
+        } else {
+            $('#grn_id').show().prop('required', true).prop('disabled', false);
+            $('#invoice_id').hide().prop('required', false).prop('disabled', true).val(null).trigger('change');
             $('#po_id').hide().prop('required', false).prop('disabled', true).val('').trigger('change');
         }
         $('.loadDetailsSection').html('');
     }
 
-    // function loadPODetails() {
-    //     const poId = $('#po_id').val();
-    //     if(!poId) return $('.loadDetailsSection').html('');
-    //     $('.loadDetailsSection').html('<div class="loader"></div>');
+    function loadPODetails() {
+        const poId = $('#po_id').val();
+        if(!poId) return $('.loadDetailsSection').html('');
+        $('.loadDetailsSection').html('<div class="loader"></div>');
 
-    //     $.get("{{ url('finance/purchase-payments/loadPurchasePaymentVoucherDetailByPONo') }}", { poId })
-    //         .done(data => {
-    //             $('.loadDetailsSection').html(data);
-    //         });
-    // }
+        $.get("{{ url('finance/purchase-payments/loadPurchasePaymentVoucherDetailByPONo') }}", { poId })
+            .done(data => {
+                $('.loadDetailsSection').html(data);
+            });
+    }
 
     function loadGRNDetails() {
         const grnId = $('#grn_id').val();
