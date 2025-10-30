@@ -83,17 +83,15 @@ class MenuController extends Controller
         $mainTitle = 'Menu';
         $pageTitle = 'Add New Menu';
         $menuType = array(
-            '1' => 'User',
-            '2' => 'Finance',
-            '3' => 'Purchase',
-            '4' => 'Store',
-            '5' => 'Sale',
-            '6' => 'HR',
+            '1' => 'Dashboard',
+            '2' => 'Purchase',
+            '3' => 'Store',
+            '4' => 'Productions',
+            '5' => 'Finance',
+            '6' => 'Sale',
             '7' => 'Reports',
-            '8' => 'Dashboard',
-            '9' => 'General Setting',
-            '10' => 'General Option',
-            '11' => 'Production'
+            '8' => 'Master Tables',
+            '9' => 'Users'
         );
         return view($this->page.'create',compact('mainTitle','pageTitle','menuType','pageUrl'));
     }
@@ -170,17 +168,15 @@ class MenuController extends Controller
         $mainTitle = 'Menu';
         $pageTitle = 'Edit Menu Detail';
         $menuType = array(
-            '1' => 'User',
-            '2' => 'Finance',
-            '3' => 'Purchase',
-            '4' => 'Store',
-            '5' => 'Sale',
-            '6' => 'HR',
+            '1' => 'Dashboard',
+            '2' => 'Purchase',
+            '3' => 'Store',
+            '4' => 'Productions',
+            '5' => 'Finance',
+            '6' => 'Sale',
             '7' => 'Reports',
-            '8' => 'Dashboard',
-            '9' => 'General Setting',
-            '10' => 'General Option',
-            '11' => 'Production'
+            '8' => 'Master Tables',
+            '9' => 'Users'
         );
         return view($this->page.'edit', compact('menu','mainTitle','pageTitle','menuType','pageUrl'));
     }

@@ -279,7 +279,7 @@
 
                 <div class="modal-body">
                     <div class="mdel-bx">
-                        <div class="model-logo"><img style="width:15%;" src="{{ CommonHelper::displaySchoolLogo() }}">
+                        <div class="model-logo">
                             <h4 class="modal-title">Select The Company</h4>
                         </div>
                         <div class="row">
