@@ -678,6 +678,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('cash-flow-statement', [CashFlowStatementController::class, 'index'])->name('reports.cash-flow-statement');
     Route::get('sales-report', [SalesReportController::class, 'index'])->name('reports.viewSalesReport');
+
+    include 'module/production.php';
 });
 
 
@@ -686,4 +688,4 @@ Route::middleware(['auth'])->group(function () {
 
 
 include 'module/users.php';
-include 'module/production.php';
+
