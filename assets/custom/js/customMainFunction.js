@@ -756,6 +756,115 @@ function activePurchaseVoucher(type, id, status, voucherTypeStatus) {
   });
 }
 
+// material request and store challan
+
+function approveMaterialVoucher(type, id, status, voucherTypeStatus) {
+  if (type == 1) {
+    var url = 'material-requests/approveMaterialRequestVoucher';
+  } else {
+    var url = 'good-receipt-notes/approveGoodReceiptNoteVoucher';
+  }
+  $.ajax({
+    url: url,  // URL of the Blade view (e.g., 'sections/_form')
+    type: 'post',
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: { id: id, status: status, voucherTypeStatus: voucherTypeStatus },
+    success: function (response) {
+      if (response == 'Done') {
+        $("#showDetailModelOneParamerter").modal("toggle");
+        get_ajax_data();
+      }
+    }
+  });
+}
+function rejectMaterialVoucher(type, id, status, voucherTypeStatus) {
+  if (type == 1) {
+    var url = 'material-requests/materialRequestVoucherRejectAndRepost';
+  } else {
+    var url = 'good-receipt-notes/goodReceiptNoteVoucherRejectAndRepost';
+  }
+  $.ajax({
+    url: url,  // URL of the Blade view (e.g., 'sections/_form')
+    type: 'post',
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: { id: id, status: status, voucherTypeStatus: voucherTypeStatus, value: 3 },
+    success: function (response) {
+      if (response == 'Done') {
+        $("#showDetailModelOneParamerter").modal("toggle");
+        get_ajax_data();
+      }
+    }
+  });
+}
+function repostMaterialVoucher(type, id, status, voucherTypeStatus) {
+  if (type == 1) {
+    var url = 'material-requests/materialRequestVoucherRejectAndRepost';
+  } else {
+    var url = 'good-receipt-notes/goodReceiptNoteVoucherRejectAndRepost';
+  }
+  $.ajax({
+    url: url,  // URL of the Blade view (e.g., 'sections/_form')
+    type: 'post',
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: { id: id, status: status, voucherTypeStatus: voucherTypeStatus, value: 1 },
+    success: function (response) {
+      if (response == 'Done') {
+        $("#showDetailModelOneParamerter").modal("toggle");
+        get_ajax_data();
+      }
+    }
+  });
+}
+
+function inactiveMaterialVoucher(type, id, status, voucherTypeStatus) {
+  if (type == 1) {
+    var url = 'material-requests/materialRequestVoucherActiveAndInactive';
+  } else {
+    var url = 'good-receipt-notes/goodReceiptNoteVoucherActiveAndInactive';
+  }
+  $.ajax({
+    url: url,  // URL of the Blade view (e.g., 'sections/_form')
+    type: 'post',
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: { id: id, status: status, voucherTypeStatus: voucherTypeStatus, value: 2 },
+    success: function (response) {
+      if (response == 'Done') {
+        $("#showDetailModelOneParamerter").modal("toggle");
+        get_ajax_data();
+      }
+    }
+  });
+}
+
+function activeMaterialVoucher(type, id, status, voucherTypeStatus) {
+  if (type == 1) {
+    var url = 'material-requests/materialRequestVoucherActiveAndInactive';
+  } else {
+    var url = 'good-receipt-notes/goodReceiptNoteVoucherActiveAndInactive';
+  }
+  $.ajax({
+    url: url,  // URL of the Blade view (e.g., 'sections/_form')
+    type: 'post',
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: { id: id, status: status, voucherTypeStatus: voucherTypeStatus, value: 1 },
+    success: function (response) {
+      if (response == 'Done') {
+        $("#showDetailModelOneParamerter").modal("toggle");
+        get_ajax_data();
+      }
+    }
+  });
+}
 //End Purchase Functions
 
 

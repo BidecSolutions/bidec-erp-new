@@ -122,7 +122,7 @@ class MaterialRequestController extends Controller
             $materialRequest->department_id = $request->department_id;
             $materialRequest->save();
 
-            // Insert data into PurchaseOrderData
+            // Insert data into MaterialRequestData
             foreach ($request->mrDataArray as $key => $mrData) {
                 $index = $key + 1; // Assuming data starts from index 1
 
@@ -161,8 +161,8 @@ class MaterialRequestController extends Controller
 
         try {
             // Fetch the purchase order and related data
-            $purchaseOrder = PurchaseOrder::findOrFail($id);
-            $purchaseOrderData = PurchaseOrderData::where('purchase_order_id', $id)->get();
+            $materialRequest = MaterialRequest::findOrFail($id);
+            $materialRequestData = MaterialRequestData::where('material_request_id', $id)->get();
 
             // Define file paths for JSON files
             $jsonFiles = [
@@ -213,7 +213,7 @@ class MaterialRequestController extends Controller
             $products = array_filter($products, fn($product) => $product['status'] == 1);
 
             // Pass the data to the view
-            return view($this->page . 'edit', compact('purchaseOrder', 'purchaseOrderData', 'products', 'payment_types', 'suppliers', 'departments'));
+            return view($this->page . 'edit', compact('materialRequest', 'materialRequestData', 'products', 'payment_types', 'suppliers', 'departments'));
         } catch (\Exception $e) {
             return redirect()->route($this->page . 'index')->withErrors(['error' => 'The Request Was not found']);
         }
@@ -222,21 +222,12 @@ class MaterialRequestController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'po_date' => 'required|date',
-                // 'delivery_place' => 'required|string|max:255',
-                // 'delivery_place' => 'required|string|max:255',
-                'quotation_no' => 'nullable|string|max:255',
-                'quotation_date' => 'required|date',
-                'main_description' => 'nullable|string',
-                'paymentType' => 'required|integer',
-                'payment_type_rate' => 'required|numeric|min:0',
-                'supplier_id' => 'required|integer|exists:suppliers,id',
-                'po_note' => 'nullable|string',
-                'poDataArray' => 'required|array',
-                'poDataArray.*.product_id' => 'required|integer|exists:product_variants,id',
-                'poDataArray.*.qty' => 'required|numeric|min:1',
-                'poDataArray.*.unit_price' => 'required|numeric|min:0',
-                'poDataArray.*.sub_total' => 'required|numeric|min:0',
+                'mr_date' => 'required|date',
+                'main_description' => 'nullable|string|max:255',
+                'department_id' => 'required|integer',
+                'mrDataArray' => 'required|array',
+                'productId_*' => 'required|integer',
+                'qty_*' => 'required|numeric',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -251,60 +242,44 @@ class MaterialRequestController extends Controller
 
         try {
             // Fetch the existing Purchase Order
-            $purchaseOrder = PurchaseOrder::findOrFail($id);
-            // Update PurchaseOrder details
-            $purchaseOrder->po_date = $request->po_date;
-            // $purchaseOrder->delivery_place = $request->delivery_place;
-            // $purchaseOrder->delivery_place = $request->delivery_place;
-            $purchaseOrder->invoice_quotation_no = $request->quotation_no;
-            $purchaseOrder->quotation_date = $request->quotation_date;
-            $purchaseOrder->main_description = $request->main_description;
-            $purchaseOrder->paymentType = $request->paymentType;
-            $purchaseOrder->payment_type_rate = $request->payment_type_rate;
-            $purchaseOrder->supplier_id = $request->supplier_id;
-            $purchaseOrder->po_note = $request->po_note;
-            $purchaseOrder->save();
+            $materialRequest = MaterialRequest::findOrFail($id);
+            $materialRequest->material_request_date = $request->mr_date;
+            $materialRequest->main_description = $request->main_description;
+            $materialRequest->department_id = $request->department_id;
+            $materialRequest->save();
 
-            // Delete old associated PurchaseOrderData entries
-            PurchaseOrderData::where('purchase_order_id', $purchaseOrder->id)->delete();
-            $poDataArray = is_string($request->poDataArray) ? json_decode($request->poDataArray, true) : $request->poDataArray;
-            if (!is_array($poDataArray)) {
-                return redirect()->back()->withErrors(['error' => 'Invalid poDataArray format.']);
+            // Delete old associated MaterialRequestData entries
+            MaterialRequestData::where('material_request_id', $materialRequest->id)->delete();
+            $mrDataArray = is_string($request->mrDataArray) ? json_decode($request->mrDataArray, true) : $request->mrDataArray;
+            if (!is_array($mrDataArray)) {
+                return redirect()->back()->withErrors(['error' => 'Invalid mrDataArray format.']);
             }
-            Log::info($poDataArray);
-
-            // Update the associated PurchaseOrderData entries
-            foreach ($poDataArray as $poData) {
-                $purchaseOrderData = PurchaseOrderData::where('purchase_order_id', $purchaseOrder->id)
-                    ->where('product_variant_id', $poData['product_id'])
+            Log::info($mrDataArray);
+            foreach ($mrDataArray as $mrData) {
+                $materialRequestData = MaterialRequestData::where('material_request_id', $materialRequest->id)
+                    ->where('product_variant_id', $mrData['product_id'])
                     ->first();
-                Log::info($poData);
-                if ($purchaseOrderData) {
+                Log::info($materialRequestData);
+              if ($materialRequestData) {
                     // If the record exists, update it
-                    $purchaseOrderData->product_variant_id = $poData['product_id'];
-                    $purchaseOrderData->qty = $poData['qty'];
-                    $purchaseOrderData->unit_price = $poData['unit_price'];
-                    $purchaseOrderData->sub_total = $poData['sub_total'];
-                    $purchaseOrderData->save();
+                    $materialRequestData->product_variant_id = $request->input('productId_' . $index);
+                    $materialRequestData->qty = $request->input('qty_' . $index);
+                    $materialRequestData->save();
                 } else {
                     // If the record does not exist, create a new entry
-                    $purchaseOrderData = new PurchaseOrderData();
-                    $purchaseOrderData->purchase_order_id = $purchaseOrder->id;
-                    $purchaseOrderData->product_variant_id = $poData['product_id'];
-                    $purchaseOrderData->qty = $poData['qty'];
-                    $purchaseOrderData->unit_price = $poData['unit_price'];
-                    $purchaseOrderData->sub_total = $poData['sub_total'];
-                    $purchaseOrderData->save();
+                        $materialRequestData = new MaterialRequestData();
+                        $materialRequestData->material_request_id = $materialRequest->id;
+                        $materialRequestData->product_variant_id = $mrData['product_id'];
+                        $materialRequestData->qty = $mrData['qty'];
+                        $materialRequestData->save();
                 }
             }
-
-
             // Commit transaction
             DB::commit();
 
             return redirect()
                 ->route($this->page . 'index')
-                ->with('success', 'Purchase Order Updated Successfully');
+                ->with('success', 'Material Request Updated Successfully');
         } catch (Exception $e) {
             // Rollback transaction
             DB::rollBack();
@@ -323,36 +298,37 @@ class MaterialRequestController extends Controller
             'id' => 'required|integer',
         ]);
 
-        $purchaseOrderId = $request->id;
+        $materialRequestId = $request->id;
 
         // Fetch the purchase order details with the supplier name
-        $purchaseOrder = DB::table('purchase_orders')
-            ->join('suppliers', 'purchase_orders.supplier_id', '=', 'suppliers.id')
+        $materialRequest = DB::table('material_requests')
+            ->join('departments', 'material_requests.department_id', '=', 'departments.id')
             ->select(
-                'purchase_orders.*',
-                'suppliers.name as supplier'
+                'material_requests.*',
+                'departments.department_name as department'
             )
-            ->where('purchase_orders.id', $purchaseOrderId)
+            ->where('material_requests.id', $materialRequestId)
             ->first();
 
-        if (!$purchaseOrder) {
+        if (!$materialRequest) {
             return response()->json(['error' => 'Purchase order not found'], 404);
         }
 
         // Attach purchase order data to the main object
-        $purchaseOrder->purchaseOrderData = DB::table('purchase_order_datas as pod')
-            ->join('product_variants as pv', 'pod.product_variant_id', '=', 'pv.id')
+        $materialRequest->materialRequestData = DB::table('material_request_datas as mrd')
+            ->join('product_variants as pv', 'mrd.product_variant_id', '=', 'pv.id')
             ->join('products as p', 'pv.product_id', '=', 'p.id')
-            ->join('sizes as s', 'pv.size_id', '=', 's.id')
-            ->select('pod.*', 's.name as size_name', 'pv.amount as product_variant_amount', 'p.name as product_name')
-            ->where('purchase_order_id', $purchaseOrderId)
+            ->select('mrd.*', 
+            'pv.amount as product_variant_amount',
+            'p.name as product_name')
+            ->where('material_request_id', $materialRequestId)
             ->get();
 
         // Fetch related purchase order details for display
-        $purchaseOrderDetails = $purchaseOrder->purchaseOrderData;
+        $materialRequestDetails = $materialRequest->materialRequestData;
 
         // Return the view with the purchase order details
-        return view($this->page . 'viewPurchaseOrderDetail', compact('purchaseOrder', 'purchaseOrderDetails'));
+        return view($this->page . 'viewMaterialRequestDetail', compact('materialRequest', 'materialRequestDetails'));
     }
 
 
@@ -411,21 +387,20 @@ class MaterialRequestController extends Controller
 
     public function status($id)
     {
-        $purchaseOrder = PurchaseOrder::find($id);
-        $purchaseOrder->status = 1;
-        $purchaseOrder->save();
-        return response()->json(['success' => 'Purchase Order marked as active successfully!']);
-        //return redirect()->route('purchase-orders.index')->with('success', 'Purchase Order Activated Successfully');
+        $materialRequest = MaterialRequest::find($id);
+        $materialRequest->status = 1;
+        $materialRequest->save();
+        return response()->json(['success' => 'Material Request marked as active successfully!']);
     }
     public function destroy($id)
     {
-        $purchaseOrder = PurchaseOrder::find($id);
-        $purchaseOrder->status = 2;
-        $purchaseOrder->save();
-        return response()->json(['success' => 'Purchase Order marked as inactive successfully!']);
+        $materialRequest = MaterialRequest::find($id);
+        $materialRequest->status = 2;
+        $materialRequest->save();
+        return response()->json(['success' => 'Material Request marked as inactive successfully!']);
     }
 
-    public function approvePurchaseOrderVoucher(Request $request)
+    public function approveMaterialRequestVoucher(Request $request)
     {
         $companyId = Session::get('company_id');
         $companyLocationId = Session::get('company_location_id');
@@ -434,11 +409,11 @@ class MaterialRequestController extends Controller
         $voucherTypeStatus = $request->input('voucherTypeStatus');
         $value = $request->input('value');
 
-        DB::table('purchase_orders')->where('id', $id)->where('company_id', $companyId)->where('company_location_id', $companyLocationId)->update(['po_status' => 2]);
+        DB::table('material_requests')->where('id', $id)->where('company_id', $companyId)->where('location_id', $companyLocationId)->update(['mr_status' => 2]);
         echo 'Done';
     }
 
-    public function purchaseOrderVoucherRejectAndRepost(Request $request)
+    public function MaterialRequestVoucherRejectAndRepost(Request $request)
     {
         $companyId = Session::get('company_id');
         $companyLocationId = Session::get('company_location_id');
@@ -447,11 +422,11 @@ class MaterialRequestController extends Controller
         $voucherTypeStatus = $request->input('voucherTypeStatus');
         $value = $request->input('value');
 
-        DB::table('purchase_orders')->where('id', $id)->where('company_id', $companyId)->where('company_location_id', $companyLocationId)->update(['po_status' => $value]);
+        DB::table('material_requests')->where('id', $id)->where('company_id', $companyId)->where('location_id', $companyLocationId)->update(['mr_status' => $value]);
         echo 'Done';
     }
 
-    public function purchaseOrderVoucherActiveAndInactive(Request $request)
+    public function materialRequestVoucherActiveAndInactive(Request $request)
     {
         $companyId = Session::get('company_id');
         $companyLocationId = Session::get('company_location_id');
@@ -460,12 +435,12 @@ class MaterialRequestController extends Controller
         $voucherTypeStatus = $request->input('voucherTypeStatus');
         $value = $request->input('value');
 
-        DB::table('purchase_orders')->where('id', $id)->where('company_id', $companyId)->where('company_location_id', $companyLocationId)->update(['status' => $value]);
+        DB::table('material_requests')->where('id', $id)->where('company_id', $companyId)->where('location_id', $companyLocationId)->update(['status' => $value]);
         echo 'Done';
     }
     public function getLastPurchasePrice($productVariantId)
 {
-    $lastPrice = DB::table('purchase_order_datas')
+    $lastPrice = DB::table('material_request_datas')
         ->where('product_variant_id', $productVariantId)
         ->orderByDesc('id')
         ->value('unit_price');

@@ -47,3 +47,5 @@ class MaterialRequest extends Model
         return $this->hasMany(MaterialRequestData::class, 'material_request_id', 'id');
     }
 }
+
+

@@ -88,6 +88,27 @@ class CommonHelper
         }
         echo $data;
     }
+    //material request and store challan
+    public static function getButtonsforMaterialRequestAndStoreChallanVouchers($data)
+    {
+        $type = $data['type'];
+        $id = $data['id'];
+        $status = $data['status'];
+        $voucherTypeStatus = $data['voucher_type_status'];
+        $data = '';
+        if ($status == 1 && $voucherTypeStatus == 1) {
+            $data .= '<button class="btn btn-xs btn-warning" onclick="inactiveMaterialVoucher(' . $type . ', ' . $id . ', ' . $status . ', ' . $voucherTypeStatus . ')">In-Active</button>&nbsp;';
+        } else if ($voucherTypeStatus == 1) {
+            $data .= '<button class="btn btn-xs btn-danger" onclick="activeMaterialVoucher(' . $type . ', ' . $id . ', ' . $status . ', ' . $voucherTypeStatus . ')">Active</button>&nbsp;';
+        }
+        if ($voucherTypeStatus == 1 && $status == 1) {
+            $data .= '<button class="btn btn-xs btn-success" onclick="approveMaterialVoucher(' . $type . ', ' . $id . ', ' . $status . ', ' . $voucherTypeStatus . ')">Approve</button>&nbsp;';
+            $data .= '<button class="btn btn-xs btn-danger" onclick="rejectMaterialVoucher(' . $type . ', ' . $id . ', ' . $status . ', ' . $voucherTypeStatus . ')">Reject</button>&nbsp;';
+        } else if ($voucherTypeStatus == 3) {
+            $data .= '<button class="btn btn-xs btn-danger" onclick="repostMaterialVoucher(' . $type . ', ' . $id . ', ' . $status . ', ' . $voucherTypeStatus . ')">Repost</button>&nbsp;';
+        }
+        echo $data;
+    }
     public static function getButtonsforReturnGoodReceiptNoteVouchers($data)
     {
         $type = $data['type'];
