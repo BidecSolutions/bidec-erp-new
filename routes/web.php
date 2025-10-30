@@ -48,7 +48,8 @@ use App\Http\Controllers\{
     SaleReceiptController,
     TaxAccountsController,
     PurchaseInvoiceController,
-    SaleInvoiceController
+    SaleInvoiceController,
+    StoreChallanController
 };
 
 //use GPBMetadata\Google\Api\Auth;
@@ -320,6 +321,25 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/material-requests/materialRequestVoucherActiveAndInactive', [MaterialRequestController::class, 'materialRequestVoucherActiveAndInactive']);
 
 
+    Route::controller(StoreChallanController::class)->group(function () {
+        Route::prefix('store-challans')->group(function () {
+            Route::get('/', 'index')->name('store-challans.index');
+            Route::get('/create', 'create')->name('store-challans.create');
+            Route::post('/store', 'store')->name('store-challans.store');
+            Route::post('/status/{id}', 'status')->name('store-challans.status');
+            Route::get('/{id}/edit', 'edit')->name('store-challans.edit');
+            Route::post('/update/{goodReceiptNote}', 'update')->name('store-challans.update');
+            Route::post('/destroy/{id}', 'destroy')->name('store-challans.destroy');
+            Route::get('/getMaterialRequestsByDepartmentId', 'getMaterialRequestsByDepartmentId')->name('getMaterialRequestsByDepartmentId');
+            Route::get('/getMaterialRequestsForEdit', 'getMaterialRequestsForEdit')->name('getMaterialRequestsForEdit');
+            Route::get('/show', 'show')->name('store-challans.show');
+        });
+    });
+
+
+    Route::post('/store-challans/approveStoreChallanVoucher', [StoreChallanController::class, 'approveStoreChallanVoucher']);
+    Route::post('/store-challans/storeChallanVoucherRejectAndRepost', [StoreChallanController::class, 'storeChallanVoucherRejectAndRepost']);
+    Route::post('/store-challans/storeChallanVoucherActiveAndInactive', [StoreChallanController::class, 'storeChallanVoucherActiveAndInactive']);
 
 
     Route::controller(TransferNoteController::class)->group(function () {

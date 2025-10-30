@@ -51,23 +51,43 @@ class PurchasePaymentController extends Controller
         $companyId = session('company_id');
         $companyLocationId = session('company_location_id');
 
-        // Pending Purchase Orders / GRNs
-        $pendingPOs = DB::table('purchase_order_datas as pod')
-            ->join('purchase_orders as po', 'pod.purchase_order_id', '=', 'po.id')
+        // // Pending Purchase Orders / GRNs
+        // $pendingPOs = DB::table('purchase_order_datas as pod')
+        //     ->join('purchase_orders as po', 'pod.purchase_order_id', '=', 'po.id')
+        //     ->join('suppliers as s', 'po.supplier_id', '=', 's.id')
+        //     ->leftJoin('grn_datas as gd', 'po.id', '=', 'gd.po_id')
+        //     ->leftJoin('good_receipt_notes as grn', 'gd.good_receipt_note_id', '=', 'grn.id')
+        //     ->where('pod.payment_status', 1)
+        //     ->where('po.po_status', 2)
+        //     ->where('po.status', 1)
+        //     ->where('po.company_id', $companyId)
+        //     ->where('po.company_location_id', $companyLocationId)
+        //     ->distinct()
+        //     ->get([
+        //         'po.id',
+        //         'po.po_no',
+        //         'po.po_date',
+        //         's.name as supplier_name',
+        //         'grn.grn_no',
+        //         'grn.grn_date'
+        //     ]);
+
+        $pendingPOs = DB::table('grn_datas as grnd')
+            ->join('purchase_orders as po','grnd.po_id','=','po.id')
             ->join('suppliers as s', 'po.supplier_id', '=', 's.id')
-            ->leftJoin('grn_datas as gd', 'po.id', '=', 'gd.po_id')
-            ->leftJoin('good_receipt_notes as grn', 'gd.good_receipt_note_id', '=', 'grn.id')
-            ->where('pod.payment_status', 1)
-            ->where('po.po_status', 2)
-            ->where('po.status', 1)
-            ->where('po.company_id', $companyId)
-            ->where('po.company_location_id', $companyLocationId)
+            ->join('good_receipt_notes as grn', 'grnd.good_receipt_note_id', '=', 'grn.id')
+            ->where('grn.payment_status', 1)
+            ->where('grn.grn_status', 2)
+            ->where('grn.status', 1)
+            ->where('grn.company_id', $companyId)
+            ->where('grn.company_location_id', $companyLocationId)
             ->distinct()
             ->get([
                 'po.id',
                 'po.po_no',
                 'po.po_date',
                 's.name as supplier_name',
+                'grn.id as grn_id',
                 'grn.grn_no',
                 'grn.grn_date'
             ]);
@@ -87,9 +107,55 @@ class PurchasePaymentController extends Controller
         return view($this->page.'create', compact('pendingPOs', 'purchaseInvoices'));
     }
 
-    public function loadPurchasePaymentVoucherDetailByPONo(Request $request){
+    // public function loadPurchasePaymentVoucherDetailByPONo(Request $request){
+    //     // Get the PO ID, company ID, and company location ID from the request and session
+    //     $poId = $request->input('poId');
+    //     $companyId = Session::get('company_id');
+    //     $companyLocationId = Session::get('company_location_id');
+        
+    //     // Fetch the item summary list dynamically using the PO ID, company ID, and location ID
+    //     $itemSummaryList = DB::select(
+    //         'SELECT c.name as category_name, p.name as product_name, s.name as size_name, pod.qty, pod.unit_price, pod.sub_total
+    //         FROM purchase_order_datas as pod
+    //         INNER JOIN product_variants as pv ON pod.product_variant_id = pv.id
+    //         INNER JOIN products as p ON pv.product_id = p.id
+    //         INNER JOIN categories as c ON p.category_id = c.id
+    //         INNER JOIN sizes as s ON pv.size_id = s.id
+    //         WHERE pod.purchase_order_id = :poId
+    //         AND pod.company_id = :companyId
+    //         AND pod.company_location_id = :companyLocationId',
+    //         ['poId' => $poId, 'companyId' => $companyId, 'companyLocationId' => $companyLocationId]
+    //     );
+    
+    //     // Fetch the payment summary list dynamically
+    //     $paymentSummaryList = DB::select(
+    //         'SELECT p.pv_no, p.pv_date, coa.name as account_head, pd.amount
+    //         FROM payments as p
+    //         INNER JOIN payment_data as pd ON p.id = pd.payment_id
+    //         INNER JOIN chart_of_accounts as coa ON pd.acc_id = coa.id
+    //         WHERE pd.debit_credit = 2
+    //         AND p.po_id = :poId
+    //         AND p.company_id = :companyId
+    //         AND p.company_location_id = :companyLocationId',
+    //         ['poId' => $poId, 'companyId' => $companyId, 'companyLocationId' => $companyLocationId]
+    //     );
+    //     $supplierDetail = DB::table('suppliers as s')
+    //         ->join('purchase_orders as po','po.supplier_id','=','s.id')
+    //         ->where('po.id',$poId)
+    //         ->select('s.name','s.acc_id')
+    //         ->first();
+    
+    //     // Return the view with the dynamic data
+    //     return view($this->page . 'loadPurchasePaymentVoucherDetailByPONo', [
+    //         'itemSummaryList' => $itemSummaryList,
+    //         'paymentSummaryList' => $paymentSummaryList,
+    //         'supplierDetail' => $supplierDetail
+    //     ]);
+    // }
+
+    public function loadPurchasePaymentVoucherDetailByGRNNo(Request $request){
         // Get the PO ID, company ID, and company location ID from the request and session
-        $poId = $request->input('poId');
+        $grnId = $request->input('grnId');
         $companyId = Session::get('company_id');
         $companyLocationId = Session::get('company_location_id');
         
