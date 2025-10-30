@@ -29,6 +29,19 @@
     $jsonString = Cache::remember($cacheKeySubMenus, 60, function () {
         return DB::table('sub_menus')->where('status', 1)->get()->toJson();
     });
+
+    $mainMenus = Cache::remember('main_menus', 60, fn() =>
+        DB::connection('mysql')->table('menus')->select('menu_type', 'menu_icon')->distinct()->get()
+    );
+
+    $allSubMenus = Cache::remember('active_sub_menus_all', 60, fn() =>
+        DB::connection('mysql')->table('sub_menus')->where('status', 1)->get()
+    );
+
+    $allMenuItems = Cache::remember('menu_items_all', 60, fn() =>
+        DB::connection('mysql')->table('menus')->get()
+    );
+    $currentRoute = Route::currentRouteName();
 @endphp
 
 <style>
@@ -82,6 +95,15 @@
         /* padding:calc(2rem + 4.45rem + 1.3rem) 0.6rem 0; */
         /* background: antiquewhite; */
     }
+    .dd.active > a { background: #f0f0f0; border-left: 4px solid #007bff; }
+    .pmastermnu .active > a, .smastermnu .active > a {
+        color: #007bff !important;
+        font-weight: bold !important;
+    }
+    .pmastermnu .active > a:before, .smastermnu .active > a:before {
+        content: "•"; margin-right: 8px; color: #007bff;
+    }
+    .pmastermnu.show, .smastermnu.show { display: block; }
 </style>
 
 <div id="mySidenav" class="sidenavnr">
@@ -92,128 +114,119 @@
             <a href="#" class="closebtn theme-f-clr Navclose" ><i class="far fa-dot-circle"></i></a>
         </div>
     </div>
-    <ul class="m_list " id="myGroup">
-        <?php
-            $SubQueryMenu = DB::Connection('mysql')->table('menus')->select('menu_type','menu_icon')->distinct()->get();
-            foreach($SubQueryMenu as $sqmRow){
-                $linkName = $menuType[$sqmRow->menu_type] ?? null;
+    <ul class="m_list" id="myGroup">
+        @foreach ($mainMenus as $mainMenu)
+            @php
+                $menuTypeName = $menuType[$mainMenu->menu_type] ?? 'Unknown';
+                $menuIcon = $mainMenu->menu_icon ?? 'fal fa-circle';
                 $newCounter = 0;
-        ?>
-                <li class="mainOption_<?php echo $sqmRow->menu_type?>">
-                    <div class="sm-bx">
-                        <button class="btn settingListSb theme-bg" data-toggle="collapse" data-target="#masterSetting<?php echo $sqmRow->menu_type?>" ><span><i class="<?php echo $sqmRow->menu_icon?>"></i></span> <p><?php echo $linkName?></p></button>
-                        <?php 
-                            $mainMenuId = $sqmRow->menu_type;
-                            $cacheKeySubMenu = 'sub_menus_for_' . $sqmRow->menu_type;
-                            $SubQuerySubMenus = Cache::remember($cacheKeySubMenu, 60, function () use ($sqmRow) {
-                                return DB::Connection('mysql')->table('menus')->where('menu_type', $sqmRow->menu_type)->get();
-                            });
-                            //$SubQuerySubMenus = DB::Connection('mysql')->table('menus')->where('menu_type',$sqmRow->menu_type)->get();
-                            $count = 1;
-                            $getMenuDetailId = DB::table('sub_menus')
-                                ->join('menus', 'sub_menus.menu_id', '=', 'menus.id') // Corrected join
-                                ->where('sub_menus.url', Route::currentRouteName()) // Ensure column reference
-                                ->select('sub_menus.*', 'menus.menu_type') // Select needed fields
-                                ->first();
-                                $menuTypeClass = '';
-                                if(!empty($getMenuDetailId)){
-                                    if ($getMenuDetailId->menu_type != $sqmRow->menu_type) {
-                                        $menuTypeClass = 'collapse';
-                                    }
-                                }else{
-                                    $menuTypeClass = 'collapse';
-                                }
-                                
-                        ?>
-                        <div id="masterSetting<?php echo $sqmRow->menu_type?>" class="{{$menuTypeClass}} pmastermnu">
-                            <ul class="list-unstyled">
-                            @foreach($SubQuerySubMenus as $sqsmRow)
+
+                // Sub-menus under this menu type
+                $subMenus = $allMenuItems->where('menu_type', $mainMenu->menu_type);
+
+                // Determine if current route belongs to this parent menu
+                $currentMenuType = DB::table('sub_menus')
+                    ->join('menus', 'sub_menus.menu_id', '=', 'menus.id')
+                    ->where('sub_menus.url', $currentRoute)
+                    ->value('menus.menu_type');
+
+                $isParentActive = $currentMenuType == $mainMenu->menu_type;
+            @endphp
+
+            <li class="mainOption_{{ $mainMenu->menu_type }} {{ $isParentActive ? 'active' : '' }}">
+                <div class="sm-bx">
+                    <button class="btn settingListSb theme-bg" data-toggle="collapse"
+                        data-target="#masterSetting{{ $mainMenu->menu_type }}">
+                        <span><i class="{{ $menuIcon }}"></i></span>
+                        <p>{{ $menuTypeName }}</p>
+                    </button>
+
+                    <div id="masterSetting{{ $mainMenu->menu_type }}"
+                        class="{{ $isParentActive ? 'show' : 'collapse' }} pmastermnu">
+                        <ul class="list-unstyled">
+                            @php $count = 1; @endphp
+
+                            @foreach ($subMenus as $subMenu)
                                 @php
-                                    $menuId = $sqsmRow->id;
-                                    $subMenus = json_decode($jsonString, true);
-                                    $specificRecords = array_filter($subMenus, fn($subMenu) => $subMenu['menu_id'] == $menuId && $subMenu['sub_menu_type'] == 1);
-                                    $urls = array_column($specificRecords, 'url');
-                                    $hasActiveChild = collect($specificRecords)->contains(fn($record) => Route::currentRouteName() === $record['url']);
+                                    $menuId = $subMenu->id;
+                                    $subMenuRecords = $allSubMenus->where('menu_id', $menuId)->where('sub_menu_type', 1);
+                                    $urls = $subMenuRecords->pluck('url')->toArray();
+                                    $hasActiveChild = $subMenuRecords->contains(fn($sm) => $sm->url === $currentRoute);
                                 @endphp
+
                                 @if (Auth::user()->email !== 'ushahfaisalranta@gmail.com' && Auth::user()->acc_type !== 'owner')
                                     @canany($urls)
-                                        <li class="dd {{ $hasActiveChild ? 'active' : '' }}"><a href="#" class="settingListSb-subItem" data-toggle="collapsee" data-target="#masterSetting1-<?= $count ?>">{{$sqsmRow->menu_name}}</a>
-                                            <div id="masterSetting1-<?= $count ?>" class="collapsee smastermnu">
+                                        <li class="dd {{ $hasActiveChild ? 'active' : '' }}">
+                                            <a href="#" class="settingListSb-subItem" data-toggle="collapsee"
+                                                data-target="#masterSetting1-{{ $count }}">
+                                                {{ $subMenu->menu_name }}
+                                            </a>
+                                            <div id="masterSetting1-{{ $count }}" class="collapsee smastermnu">
                                                 <ul class="list-unstyled">
-                                                    <?php
-                                                        $sqsmRowParentCode = $sqsmRow->id;
-                                                        $mainSubMenus = DB::Connection('mysql')->table('sub_menus')->where('menu_id',$sqsmRow->id)->where('sub_menu_type',1)->get();
-                                                        foreach($mainSubMenus as $msmRow1){
-                                                            $routeUrl = $msmRow1->url;
-                                                            $isActive = Route::currentRouteName() === $routeUrl;
-                                                    ?>
-                                                            @can($routeUrl)
-                                                                <li class="{{ $isActive ? 'active' : '' }}">
-                                                                    <span><i class="fal fa-circle-notch"></i></span>
-                                                                    <a href="{{ route($routeUrl) }}" class="{{ $isActive ? 'active' : '' }}">
-                                                                        {{ $msmRow1->sub_menu_name }}
-                                                                    </a>
-                                                                </li>
-                                                                @php
-                                                                    $newCounter++;
-                                                                @endphp
-                                                            @endcan
-                                                    <?php 
-                                                        } 
-                                                    ?>
+                                                    @foreach ($subMenuRecords as $record)
+                                                        @can($record->url)
+                                                            @php $isActive = $currentRoute === $record->url; @endphp
+                                                            <li class="{{ $isActive ? 'active' : '' }}">
+                                                                <span><i class="fal fa-circle-notch"></i></span>
+                                                                <a href="{{ route($record->url) }}"
+                                                                    class="{{ $isActive ? 'active' : '' }}">
+                                                                    {{ $record->sub_menu_name }}
+                                                                </a>
+                                                            </li>
+                                                            @if ($isActive) @php $newCounter++; @endphp @endif
+                                                        @endcan
+                                                    @endforeach
                                                 </ul>
                                             </div>
                                         </li>
                                     @endcanany
                                 @else
-                                    <li class="dd {{ $hasActiveChild ? 'active' : '' }}"><a href="#" class="settingListSb-subItem" data-toggle="collapsee" data-target="#masterSetting1-<?= $count ?>">{{$sqsmRow->menu_name}}</a>
-                                        <div id="masterSetting1-<?= $count ?>" class="collapsee smastermnu">
+                                    <li class="dd {{ $hasActiveChild ? 'active' : '' }}">
+                                        <a href="#" class="settingListSb-subItem" data-toggle="collapsee"
+                                            data-target="#masterSetting1-{{ $count }}">
+                                            {{ $subMenu->menu_name }}
+                                        </a>
+                                        <div id="masterSetting1-{{ $count }}" class="collapsee smastermnu">
                                             <ul class="list-unstyled">
-                                                <?php
-                                                    $sqsmRowParentCode = $sqsmRow->id;
-                                                    $mainSubMenus = DB::Connection('mysql')->table('sub_menus')->where('menu_id',$sqsmRow->id)->where('sub_menu_type',1)->get();
-                                                    foreach($mainSubMenus as $msmRow1){
-                                                        $routeUrl = $msmRow1->url;
-                                                        $isActive = Route::currentRouteName() === $routeUrl;
-                                                ?>
-                                                        <li class="{{ $isActive ? 'active' : '' }}">
-                                                            <span><i class="fal fa-circle-notch"></i></span>
-                                                            <a href="{{ route($routeUrl) }}" class="{{ $isActive ? 'active' : '' }}">
-                                                                {{ $msmRow1->sub_menu_name }}
-                                                            </a>
-                                                        </li>
-                                                <?php 
-                                                    } 
-                                                ?>
+                                                @foreach ($subMenuRecords as $record)
+                                                    @php $isActive = $currentRoute === $record->url; @endphp
+                                                    <li class="{{ $isActive ? 'active' : '' }}">
+                                                        <span><i class="fal fa-circle-notch"></i></span>
+                                                        <a href="{{ route($record->url) }}"
+                                                            class="{{ $isActive ? 'active' : '' }}">
+                                                            {{ $record->sub_menu_name }}
+                                                        </a>
+                                                    </li>
+                                                @endforeach
                                             </ul>
                                         </div>
                                     </li>
                                 @endif
-                                <?php 
-                                    $count ++;
-                                ?>
+
+                                @php $count++; @endphp
                             @endforeach
+
                             @if (Auth::user()->email !== 'ushahfaisalranta@gmail.com' && Auth::user()->acc_type !== 'owner')
                                 <script>
-                                    removeMainOption('<?php echo $sqmRow->menu_type?>','<?php echo $newCounter?>');
+                                    removeMainOption('{{ $mainMenu->menu_type }}', '{{ $newCounter }}');
                                 </script>
                             @endif
-                            </ul>
-                        </div>
+                        </ul>
                     </div>
-                </li>
-        <?php
-            }
-        ?>
-        <!-- All Company START--->
-       
+                </div>
+            </li>
+        @endforeach
+
+        <!-- All Company START -->
         <li class="dropdown">
-            <div class="sm-bx">     
-                <button class="btn settingListSb theme-bg" data-toggle="modal" data-target="#companyListModel"><span><i class=""></i></span> <p>Company List</p></button>                                   
+            <div class="sm-bx">
+                <button class="btn settingListSb theme-bg" data-toggle="modal" data-target="#companyListModel">
+                    <span><i class=""></i></span>
+                    <p>Company List</p>
+                </button>
             </div>
         </li>
-    
-        <!-- All Company END--->
+        <!-- All Company END -->
     </ul>
 </div>
 

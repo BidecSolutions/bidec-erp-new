@@ -8,13 +8,13 @@
 <div class="well_N">
     <div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-right">
-			<?php echo CommonHelper::displayPrintButtonInBlade('PrintPurchaseOrdersList','','1');?>
-			<button id="csv" onclick="generateCSVFile('ExportPurchaseOrdersList','View Purchase Orders List')" class="btn btn-sm btn-warning">TO CSV</button>
-            <button id="pdf" onclick="generatePDFFile('ExportPurchaseOrdersList','View Purchase Orders List')" class="btn btn-sm btn-success">TO PDF</button>
+			<?php echo CommonHelper::displayPrintButtonInBlade('PrintGoodReceiptNotesList','','1');?>
+			<button id="csv" onclick="generateCSVFile('ExportGoodReceiptNotesList','View Good Receipt Notes List')" class="btn btn-sm btn-warning">TO CSV</button>
+            <button id="pdf" onclick="generatePDFFile('ExportGoodReceiptNotesList','View Good Receipt Notes List')" class="btn btn-sm btn-success">TO PDF</button>
 		</div>
 	</div>
 	<div class="lineHeight">&nbsp;</div>
-    <form id="list_data" method="get" action="{{ route('purchase-orders.index') }}">
+    <form id="list_data" method="get" action="{{ route('good-receipt-notes.index') }}">
         <div class="row">
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <label>Status</label>
@@ -37,39 +37,36 @@
                 <input type="date" name="to_date" id="to_date" value="{{$toDate}}" class="form-control" />
             </div>
             <div class="col-lg-1 col-md-1 col-sm-1 col-xs-12" style="padding: 30px;">
-                <input type="button" value="Filter" onclick="get_ajax_data()" id="filter-button" class="btn btn-xs btn-success" />
+                <input type="button" value="Filter" onclick="get_ajax_data()" class="btn btn-xs btn-success" />
             </div>
         </div>
     </form>
     <div class="lineHeight">&nbsp;</div>
-	<div class="boking-wrp dp_sdw" id="PrintPurchaseOrdersList">
+	<div class="boking-wrp dp_sdw" id="PrintGoodReceiptNotesList">
 	    <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 hidden-print">
-                                {{CommonHelper::displayPageTitle('View Purchase Orders List')}}
+                                {{CommonHelper::displayPageTitle('View Good Receipt Notes List')}}
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right hidden-print">
-                                <a href="{{ route('purchase-orders.create') }}" class="btn btn-success btn-xs">+ Create New</a>
+                                <a href="{{ route('good-receipt-notes.create') }}" class="btn btn-success btn-xs">+ Create New</a>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive wrapper">
-                        <table class="table table-responsive table-bordered" id="ExportPurchaseOrdersList">
-                            {{CommonHelper::displayPDFTableHeader('1000','View Purchase Orders List')}}
+                        <table class="table table-responsive table-bordered" id="ExportGoodReceiptNotesList">
+                            {{CommonHelper::displayPDFTableHeader('1000','View Good Receipt Notes List')}}
                             <thead>
                                 <tr>
                                     <th class="text-center">S.No</th>
-                                    <th class="text-center">P.O. No</th>
-                                    <th class="text-center">P.O. Date</th>
-                                    <!-- <th class="text-center">Delivery Place</th> -->
-                                    <th class="text-center">Invoice Quotation No</th>
-                                    <th class="text-center">Quotation Date</th>
+                                    <th class="text-center">G.R.N. No</th>
+                                    <th class="text-center">G.R.N. Date</th>
                                     <th class="text-center">Supplier Name</th>
-                
+                                    <th class="text-center">Description</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center hidden-print">Action</th>
                                 </tr>

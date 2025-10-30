@@ -21,11 +21,11 @@
                 <td>{{ $item->po_no }}</td>
                 <td>
                     <input type="number" name="return_qtys[]" class="form-control" step="0.01" min="0"
-                        value="{{ old('return_qtys.' . $index, $item->return_qty) }}">
+                        value="{{ old('return_qtys.' . $index, 0) }}">
                 </td>
                 <td>
                     <input type="text" name="remarks[]" class="form-control"
-                        value="{{ old('remarks.' . $index, $item->remarks) }}">
+                        value="{{ old('remarks.' . $index, '') }}">
                 </td>
             </tr>
         @endforeach

@@ -2358,7 +2358,7 @@ input:checked+.slider-small:before {
     text-align: left;
     width: 100%;
     overflow: hidden;
-    background: linear-gradient(90deg, #186f75 0%, #186f75bf 100%);
+    background: linear-gradient(90deg, #00000073 0%, #dddddd8f 100%);
     position: relative;
 }
 

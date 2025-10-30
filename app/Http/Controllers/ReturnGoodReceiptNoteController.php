@@ -228,6 +228,84 @@ class ReturnGoodReceiptNoteController extends Controller
         }
     }
 
+   public function getPurchaseOrdersForEdit(Request $request)
+{
+    try {
+        $supplierId = $request->query('supplierId');
+        $goodReceiptNoteId = $request->query('goodReceiptNoteId');
+        $companyId = Session::get('company_id');
+        $companyLocationId = Session::get('company_location_id');
+
+        if (!$supplierId || !$goodReceiptNoteId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Missing required parameters: supplierId or goodReceiptNoteId.'
+            ], 400);
+        }
+
+        // Fetch Purchase Orders linked with the given supplier & GRN
+        $purchaseOrders = DB::table('purchase_orders as po')
+            ->join('purchase_order_datas as pod', 'po.id', '=', 'pod.purchase_order_id')
+            ->join('product_variants as pv', 'pod.product_variant_id', '=', 'pv.id')
+            ->join('products as p', 'pv.product_id', '=', 'p.id')
+            ->join('sizes as s', 'pv.size_id', '=', 's.id')
+            ->join('grn_datas as gd', 'gd.po_data_id', '=', 'pod.id')
+            ->join('good_receipt_notes as grn', 'gd.good_receipt_note_id', '=', 'grn.id')
+            ->select(
+                'po.id as po_id',
+                'po.po_no',
+                'po.po_date',
+                'pod.id as po_data_id',
+                'p.name as product_name',
+                's.name as size_name',
+                'pv.id as product_variant_id',
+                'pod.qty as ordered_qty',
+                'gd.receive_qty as received_qty',
+                'pod.unit_price',
+                DB::raw('(pod.qty - gd.receive_qty) as balance_qty')
+            )
+            ->where('po.supplier_id', $supplierId)
+            ->where('grn.id', $goodReceiptNoteId)
+            ->where('po.company_id', $companyId)
+            ->where('po.company_location_id', $companyLocationId)
+            ->groupBy(
+                'po.id', 'po.po_no', 'po.po_date', 'pod.id', 'p.name', 
+                's.name', 'pv.id', 'pod.qty', 'gd.receive_qty', 'pod.unit_price'
+            )
+            ->get();
+
+        if ($purchaseOrders->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No purchase orders found for the given supplier and GRN.'
+            ], 404);
+        }
+
+        // Handle API or AJAX requests differently
+        if ($request->ajax() || $this->isApi) {
+            $html = view('return-good-receipt-notes.partials.grn-items-edit', [
+                'grnItems' => $purchaseOrders
+            ])->render();
+
+            return response()->json(['success' => true, 'html' => $html], 200);
+        }
+
+        // Standard JSON response
+        return response()->json([
+            'success' => true,
+            'data' => $purchaseOrders
+        ], 200);
+
+    } catch (\Exception $e) {
+        Log::error('Error in getPurchaseOrdersForEdit: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Internal Server Error: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+
 
     public function destroy($id)
     {
