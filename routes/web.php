@@ -686,4 +686,4 @@ Route::middleware(['auth'])->group(function () {
 
 
 include 'module/users.php';
-//include 'module/store.php';
+include 'module/production.php';

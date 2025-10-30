@@ -59,14 +59,14 @@
 
     <hr class="my-4">
 
-    <!-- <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4">
       <div class="col-md-3"><div class="card h-100 text-center p-3"><h6>Total Revenue</h6><h2>{{ number_format($sumRevenue,2) }}</h2></div></div>
       <div class="col-md-3"><div class="card h-100 text-center p-3"><h6>Total Expense</h6><h2>{{ number_format($sumExpense,2) }}</h2></div></div>
       <div class="col-md-3"><div class="card h-100 text-center p-3"><h6>Gross Profit</h6><h2>{{ number_format($grossProfit,2) }}</h2></div></div>
       <div class="col-md-3"><div class="card h-100 text-center p-3"><h6>Net Profit</h6><h2>{{ number_format($netProfit,2) }}</h2></div></div>
-    </div> -->
+    </div>
     <!-- 💳 Expense Breakdown -->
-  <!-- <div class="card shadow-sm">
+  <div class="card shadow-sm">
     <div class="card-header d-flex justify-content-between align-items-center bg-light">
       <strong><i class="fas fa-credit-card text-danger"></i> Expenses</strong>
       <span class="badge bg-danger fs-6">Total: {{ number_format($sumExpense ?? 0, 2) }}</span>
@@ -98,5 +98,5 @@
         </table>
       </div>
     </div>
-  </div> -->
+  </div>
 </div>
