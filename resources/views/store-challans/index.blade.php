@@ -14,7 +14,7 @@
 		</div>
 	</div>
 	<div class="lineHeight">&nbsp;</div>
-    <form id="list_data" method="get" action="{{ route('good-receipt-notes.index') }}">
+    <form id="list_data" method="get" action="{{ route('store-challans.index') }}">
         <div class="row">
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
                 <label>Status</label>
@@ -49,23 +49,23 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 hidden-print">
-                                {{CommonHelper::displayPageTitle('View Good Receipt Notes List')}}
+                                {{CommonHelper::displayPageTitle('View Store Challan List')}}
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right hidden-print">
-                                <a href="{{ route('good-receipt-notes.create') }}" class="btn btn-success btn-xs">+ Create New</a>
+                                <a href="{{ route('store-challans.create') }}" class="btn btn-success btn-xs">+ Create New</a>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive wrapper">
                         <table class="table table-responsive table-bordered" id="ExportGoodReceiptNotesList">
-                            {{CommonHelper::displayPDFTableHeader('1000','View Good Receipt Notes List')}}
+                            {{CommonHelper::displayPDFTableHeader('1000','View Store Challan List')}}
                             <thead>
                                 <tr>
                                     <th class="text-center">S.No</th>
-                                    <th class="text-center">G.R.N. No</th>
-                                    <th class="text-center">G.R.N. Date</th>
-                                    <th class="text-center">Supplier Name</th>
+                                    <th class="text-center">Store Challan No</th>
+                                    <th class="text-center">Store Challan  Date</th>
+                                    <th class="text-center">Department Name</th>
                                     <th class="text-center">Description</th>
                                     <th class="text-center">Status</th>
                                     <th class="text-center hidden-print">Action</th>

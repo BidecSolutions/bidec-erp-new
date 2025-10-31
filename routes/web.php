@@ -407,7 +407,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/destroy/{id}', 'destroy')->name('direct-sale-invoices.destroy');
             Route::get('/show', 'show')->name('direct-sale-invoices.show');
             Route::get('/getPurchaseOrdersBySupplierId', 'getPurchaseOrdersBySupplierId')->name('getPurchaseOrdersBySupplierId');
-            Route::get('/product-wise-average-rate', 'productWiseAverageRate')->name('direct-sale-invoices.product-wise-average-rate');
+            Route::get('/product-wise-average-rate-and-current-balance', 'productWiseAverageRateAndCurrentBalance')->name('direct-sale-invoices.product-wise-average-rate-and-current-balance');
 
         });
     });

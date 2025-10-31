@@ -24,7 +24,7 @@
                         <h3 class="item-model-company theme-f-m">
                             {{ $location->address }}
                         </h3>
-                        <!-- <strong>Campus Name:</strong><br> {{ $campus->name }}<br>
+                        <!-- <strong>Location Name:</strong><br> {{ $campus->name }}<br>
                             <strong>Phone No:</strong><br> {{ $campus->phone_no }}<br>
                             <strong>Email:</strong><br> {{ $campus->email }}<br>
                             <strong>Address:</strong><br> {{ $campus->address }}<br> -->

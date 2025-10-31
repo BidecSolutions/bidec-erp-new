@@ -44,18 +44,18 @@
 <style>
     .dd.active > a {
         background: #f0f0f0;
-        border-left: 4px solid #007bff;
+        border-left: 4px solid #205b60;
     }
 
     .mmastermnu .active a {
-        color: #007bff !important;
+        color: #205b60 !important;
         font-weight: bold !important;
     }
 
     .mmastermnu .active a:before {
         content: "•";
         margin-right: 8px;
-        color: #007bff;
+        color: #205b60;
     }
 
     .mmastermnu.show {
@@ -63,14 +63,14 @@
     }
 
     .smastermnu .active a {
-        color: #007bff !important;
+        color: #205b60 !important;
         font-weight: bold !important;
     }
 
     .smastermnu .active a:before {
         content: "•";
         margin-right: 8px;
-        color: #007bff;
+        color: #205b60;
     }
 
     .smastermnu.show {
@@ -92,13 +92,13 @@
         /* padding:calc(2rem + 4.45rem + 1.3rem) 0.6rem 0; */
         /* background: antiquewhite; */
     }
-    .dd.active > a { background: #f0f0f0; border-left: 4px solid #007bff; }
+    .dd.active > a { background: #f0f0f0; border-left: 4px solid #205b60; }
     .pmastermnu .active > a, .smastermnu .active > a {
-        color: #007bff !important;
+        color: #205b60 !important;
         font-weight: bold !important;
     }
     .pmastermnu .active > a:before, .smastermnu .active > a:before {
-        content: "•"; margin-right: 8px; color: #007bff;
+        content: "•"; margin-right: 8px; color: #205b60;
     }
     .pmastermnu.show, .smastermnu.show { display: block; }
 </style>
@@ -268,7 +268,7 @@
                 <div style="text-align: center">
                     <h4 style="color: black;">
                         Company Name: <strong>{{ Session::get('company_name') }}</strong> ||
-                        Campus Name: <strong>{{ Session::get('company_location_name') }}</strong>
+                        Location Name: <strong>{{ Session::get('company_location_name') }}</strong>
                     </h4>
                 </div>
             </div>

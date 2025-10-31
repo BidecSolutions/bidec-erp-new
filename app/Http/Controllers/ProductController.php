@@ -151,6 +151,7 @@ public function store(Request $request)
             'variant_amount.*' => 'nullable|numeric|min:1',
             'variant_image.*' => 'nullable|image|max:2048',
             'variant_barcode.*' => 'nullable|string|max:255',
+            'product_type'=> 'required',
         ]);
         try { 
             $getCategoryDetail = Category::select('categories.*', 'chart_of_accounts.code')
@@ -187,6 +188,8 @@ public function store(Request $request)
             $product->category_id = $request->category_id;
             $product->brand_id = $request->brand_id;
             $product->description  =$request->description;
+            $product->product_type  =$request->product_type;
+  
             if ($request->filled('order_number')) {
                 $product->order_number = $request->order_number;
             } else {

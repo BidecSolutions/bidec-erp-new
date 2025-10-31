@@ -5,7 +5,7 @@
         'type' => 1,
         'id' => $materialRequest->id,
         'status' => $materialRequest->status,
-        'voucher_type_status' => $materialRequest->mr_status,
+        'voucher_type_status' => $materialRequest->material_request_status,
     ];
 @endphp
 <div class="row">

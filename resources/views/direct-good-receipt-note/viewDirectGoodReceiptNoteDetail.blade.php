@@ -33,14 +33,14 @@
             color: #000;
         }
         .invoice-header {
-            border-bottom: 3px solid #007bff;
+            border-bottom: 3px solid #205b60;
             margin-bottom: 20px;
             padding-bottom: 15px;
         }
         .invoice-header h2 {
             margin: 0;
             font-weight: 700;
-            color: #007bff;
+            color: #205b60;
         }
         .invoice-header small {
             color: #6c757d;

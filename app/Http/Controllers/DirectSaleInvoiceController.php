@@ -103,7 +103,7 @@ class DirectSaleInvoiceController extends Controller
         return view($this->page . 'create', compact('products', 'payment_types', 'customers', 'departments','tax_accounts','allChartOfAccounts'));
     }
 
-    public function productWiseAverageRate(Request $request)
+    public function productWiseAverageRateAndCurrentBalance(Request $request)
     {
         $productVariantId = $request->input('product_variant_id');
         $fromDate  = $request->input('from_date', now()->startOfMonth());

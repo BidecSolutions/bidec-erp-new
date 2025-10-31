@@ -12,20 +12,20 @@
                     {{ CommonHelper::displayPageTitle('Edit Good Receipt Note') }}
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 text-right">
-                    <a href="{{ route('good-receipt-notes.index') }}" class="btn btn-success btn-xs">+ View List</a>
+                    <a href="{{ route('store-challans.index') }}" class="btn btn-success btn-xs">+ View List</a>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <label>Supplier Detail</label>
-                    <input type="hidden" id="good_receipt_note_id" value="{{ $goodReceiptNote->id }}">
-                    <select name="supplier_id" id="supplier_id" class="form-control select2"
+                    <label>Department Detail</label>
+                    <input type="hidden" id="store_challan_id" value="{{$storeChallan->id }}">
+                    <select name="department_id" id="department_id" class="form-control select2"
                         onchange="loadPurchaseOrderDetailUsingSupplierId()">
                         <option value="">Select Supplier</option>
-                        @foreach ($getSupplierList as $gslRow)
-                            <option value="{{ $gslRow->id }}"
-                                {{ $goodReceiptNote->supplier_id == $gslRow->id ? 'selected' : '' }}>
-                                {{ $gslRow->name }}
+                        @foreach ($getDepartmentList as $gdList)
+                            <option value="{{ $gdList->id }}"
+                                {{ $storeChallan->department_id == $gdList->id ? 'selected' : '' }}>
+                                {{ $gdList->department_name }}
                             </option>
                         @endforeach
                     </select>
@@ -47,11 +47,12 @@
         });
 
         function loadPurchaseOrderDetailForEdit() {
-            var supplierId = $('#supplier_id').val();
-            var goodReceiptNoteId = $('#good_receipt_note_id').val(); // Get GRN ID from hidden input
+            console.log("hhhhh");
+            var departmentId = $('#department_id').val();
+            var storeChallanId = $('#store_challan_id').val(); // Get GRN ID from hidden input
 
-            if (supplierId === '' || goodReceiptNoteId === '') {
-                alert('Supplier ID and Good Receipt Note ID are required.');
+            if (departmentId === '' || storeChallanId === '') {
+                alert('Department ID and Store Challan Id ID are required.');
                 $('.loadGoodsReceiptNoteDetailSection').html('');
                 return;
             }
@@ -61,11 +62,11 @@
             );
 
             $.ajax({
-                url: "{{ route('getPurchaseOrdersForEdit') }}", // Updated route
+                url: "{{ route('getMaterialRequestsForEdit') }}", // Updated route
                 type: "GET",
                 data: {
-                    supplierId: supplierId,
-                    goodReceiptNoteId: goodReceiptNoteId
+                    deparmentId: departmentId,
+                    storeChallanId: storeChallanId
                 },
                 success: function(data) {
                     if (data.success) {
@@ -100,7 +101,7 @@
 
             // You can replace this with an AJAX call or other functionality
             $.ajax({
-                url: '/good-receipt-notes/processPurchaseOrder',
+                url: '/store-challans/processPurchaseOrder',
                 type: 'POST',
                 data: {
                     orderId: selectedOrderId,

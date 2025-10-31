@@ -26,7 +26,7 @@
 <style>
     .dd.active > a {
         background: #f0f0f0;
-        border-left: 4px solid #007bff;
+        border-left: 4px solid #205b60;
     }
 
     .mmastermnu .active a {
@@ -37,7 +37,7 @@
     .mmastermnu .active a:before {
         content: "•";
         margin-right: 8px;
-        color: #007bff;
+        color: #205b60;
     }
 
     .mmastermnu.show {
@@ -45,14 +45,14 @@
     }
 
     .smastermnu .active a {
-        color: #007bff !important;
+        color: #205b60 !important;
         font-weight: bold !important;
     }
 
     .smastermnu .active a:before {
         content: "•";
         margin-right: 8px;
-        color: #007bff;
+        color: #205b60;
     }
 
     .smastermnu.show {
@@ -193,7 +193,7 @@
                     </li>
                 </ul>
                 <div style="text-align: center">
-                    <h4 style="color: black;">Company Name: <strong>{{ Session::get('company_name') }}</strong> || Campus Name: <strong>{{ Session::get('company_location_name') }}</strong> &nbsp;&nbsp;&nbsp;&nbsp;<span class="btn btn-xs btn-primary" onclick="openTraceStockModel()">Check Stock</span> &nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-xs btn-primary" href="{{url('pos/create')}}">POS</a></h4>
+                    <h4 style="color: black;">Company Name: <strong>{{ Session::get('company_name') }}</strong> || Location Name: <strong>{{ Session::get('company_location_name') }}</strong> &nbsp;&nbsp;&nbsp;&nbsp;<span class="btn btn-xs btn-primary" onclick="openTraceStockModel()">Check Stock</span> &nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-xs btn-primary" href="{{url('pos/create')}}">POS</a></h4>
                 </div>
             </div>
         </nav>
