@@ -56,7 +56,7 @@ class CustomAuthController extends Controller
             $accType = $userDetail->acc_type;
 
             // If the account type is 'owner' or 'superadmin'
-            if (in_array($accType, ['owner', 'superadmin'])) {
+            if (in_array($accType, ['client','owner', 'superadmin'])) {
                 // Exploding company IDs and selecting the first one if only one exists
                 $explodeCompanyIds = explode("<*>", $companyIds);
                 $companyId = (count($explodeCompanyIds) == 1) ? $explodeCompanyIds[0] : '';
@@ -74,7 +74,7 @@ class CustomAuthController extends Controller
                         $companyLocationId = $userDetail->company_location_id;
                     }
 
-                    if ($accType == 'owner') {
+                    if (in_array($accType, ['client','owner'])) {
                         $companyLocationDetail = DB::table('company_locations')->where('company_id', $companyId)->first();
                         $companyLocationId = $companyLocationDetail->id;
                     }

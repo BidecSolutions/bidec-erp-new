@@ -3,17 +3,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bidec Accounts Login</title>
 
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
+    :root {
+      --text-color: #00416A;
+      --accent-color: #186f75;
+      --bg_white: #ffffff;
+    }
+
+    /* 🌟 Body Styling */
     body {
       background: linear-gradient(135deg, #00416A, #E4E5E6);
       font-family: 'Poppins', sans-serif;
@@ -24,6 +31,57 @@
       margin: 0;
     }
 
+    /* 🌟 Preloader Container */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg_white);
+      z-index: 9999;
+      flex-direction: column;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #preloader.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* 🌟 Logo Animation Only (Spinner Removed) */
+    .bidec-logo {
+      position: relative;
+      font-size: 8vw;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: transparent;
+      -webkit-text-stroke: 2px var(--text-color);
+      letter-spacing: 2px;
+      overflow: hidden;
+    }
+
+    .bidec-logo::before {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      color: var(--text-color);
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 4px solid var(--text-color);
+      animation: fillText 2.8s ease-in-out forwards;
+    }
+
+    @keyframes fillText {
+      0% { width: 0; color: #fff; }
+      50% { width: 100%; color: var(--text-color); }
+      100% { width: 100%; color: var(--text-color); border-right: none; }
+    }
+
+    /* 🌟 Login Container */
     .login-container {
       background: #fff;
       width: 100%;
@@ -35,19 +93,16 @@
       animation: fadeIn 0.8s ease-in-out;
     }
 
-    .login-container img {
-      width: 100px;
-      margin-bottom: 15px;
-    }
-
     .login-container h3 {
       font-weight: 600;
-      color: #00416A;
+      color: #000;
       margin-bottom: 8px;
     }
 
     .login-container h3 span {
-      color: #0078d7;
+      background: linear-gradient(to right, var(--accent-color), #0f4f54);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .login-container p {
@@ -56,13 +111,14 @@
       margin-bottom: 25px;
     }
 
+    /* 🌟 Form Inputs */
     .form-label {
-      text-align: left;
       display: block;
       font-size: 14px;
       font-weight: 500;
       margin-bottom: 6px;
       color: #333;
+      text-align: left;
     }
 
     .form-control {
@@ -76,8 +132,8 @@
     }
 
     .form-control:focus {
-      border-color: #0078d7;
-      box-shadow: 0 0 5px rgba(0, 120, 215, 0.3);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 5px rgba(24, 111, 117, 0.3);
     }
 
     .input-wrapper {
@@ -106,8 +162,9 @@
       display: block;
     }
 
+    /* 🌟 Buttons */
     .btn-login {
-      background: #0078d7;
+      background: linear-gradient(to right, var(--accent-color), #0f4f54);
       color: #fff;
       border: none;
       border-radius: 8px;
@@ -117,57 +174,63 @@
       font-weight: 600;
       transition: all 0.3s ease;
       margin-top: 5px;
+      cursor: pointer;
     }
 
     .btn-login:hover {
-      background: #005fa3;
+      background: linear-gradient(90deg, #0f4f54, #186f75);
       transform: translateY(-2px);
     }
 
+    /* 🌟 Forgot Password */
     .forgot-password {
       display: block;
       margin-top: 15px;
       font-size: 13px;
-      color: #0078d7;
+      color: var(--accent-color);
       text-decoration: none;
       transition: color 0.3s;
     }
 
     .forgot-password:hover {
-      color: #005fa3;
+      color: #0f4f54;
       text-decoration: underline;
     }
 
+    /* 🌟 Separator Line */
     .colorgraph {
       height: 5px;
       border-radius: 5px;
-      background: linear-gradient(to right, #0078d7, #00416A, #0078d7);
+      background: linear-gradient(to right, #186f75bf, #186f75, #186f75bf);
       margin: 20px 0;
     }
 
+    /* 🌟 Animations */
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-15px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 480px) {
       .login-container {
         padding: 30px 20px;
       }
-      .login-container img {
-        width: 80px;
+      .bidec-logo {
+        font-size: 12vw;
       }
     }
   </style>
 </head>
 
 <body>
+  <!-- 🌟 Preloader (Spinner Removed) -->
+  <div id="preloader">
+    <div class="preloader-content">
+      <h3 class="bidec-logo" data-text="BIDEC..">BIDEC..</h3>
+    </div>
+  </div>
+
+  <!-- 🌟 Login Section -->
   <section class="login-sec">
     <div class="login-container">
       <form action="{{ route('login.custom') }}" method="POST" class="form-signin">
@@ -182,7 +245,7 @@
         <div class="input-wrapper">
           <i class="fa fa-user"></i>
           <input id="username" type="text" name="username" class="form-control"
-                 placeholder="Enter your username" value="{{ old('username') }}" autocomplete="off">
+                 placeholder="Enter your username" value="{{ old('username') }}" autocomplete="off" />
           @if ($errors->has('username'))
             <span class="help-block-c">{{ $errors->first('username') }}</span>
           @endif
@@ -192,17 +255,27 @@
         <div class="input-wrapper">
           <i class="fa fa-lock"></i>
           <input id="password" type="password" name="password" class="form-control"
-                 placeholder="Enter your password" autocomplete="off">
+                 placeholder="Enter your password" autocomplete="off" />
           @if ($errors->has('password'))
             <span class="help-block-c">{{ $errors->first('password') }}</span>
           @endif
         </div>
 
-        <button type="submit" class="btn-login" onclick="loader()">LOGIN <i class="fa fa-arrow-right ms-1"></i></button>
+        <button type="submit" class="btn-login">
+          LOGIN <i class="fa fa-arrow-right ms-1"></i>
+        </button>
 
         <a href="{{ route('forgetPasswordForm') }}" class="forgot-password">Forgot Password?</a>
       </form>
     </div>
   </section>
+
+  <!-- 🌟 Fade Out Script -->
+  <script>
+    window.addEventListener("load", function () {
+      const loader = document.getElementById("preloader");
+      setTimeout(() => loader.classList.add("hide"), 600);
+    });
+  </script>
 </body>
 </html>

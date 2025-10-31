@@ -122,8 +122,8 @@
                                     <div class="form-group">
                                         <label for="name">Product Type</label>
                                     <select name="product_type" id="product_type" class="select2 form-control ">
-                                            <option value="1">Finish Product</option>
-                                            <option value="2">Row Product</option>
+                                        <option value="2">Raw Product</option>    
+                                        <option value="1">Finish Product</option>
                                     </select>
                                     </div>
                                 </div>

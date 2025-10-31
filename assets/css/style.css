@@ -185,7 +185,7 @@ input:checked+.slider:before {
 
 /*button*/
 .btn-b {
-    background: transparent linear-gradient(90deg, #173CA7 0%, #0B1F59 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(to right, #186f75 0%, #186f75bf 100%) 0% 0% no-repeat padding-box;
     font-size: 15px;
     text-transform: capitalize;
     padding: 18px 60px;
@@ -195,7 +195,7 @@ input:checked+.slider:before {
 
 .btn-b:hover {
     color: #fff;
-    background: transparent linear-gradient(8deg, #173CA7 0%, #0B1F59 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, #0f4f54 0%, #0f4f54e6 100%) 0% 0% no-repeat padding-box;
 }
 
 .dply {
@@ -2358,7 +2358,7 @@ input:checked+.slider-small:before {
     text-align: left;
     width: 100%;
     overflow: hidden;
-    background: linear-gradient(90deg, #00000073 0%, #dddddd8f 100%);
+    background: linear-gradient(90deg, #00000021 0%, #dddddd8f 100%);
     position: relative;
     font-weight: bold;
 }

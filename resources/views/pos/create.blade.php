@@ -87,7 +87,7 @@
         }
 
         .variant-buttons .variant-button:hover {
-            background-color: #007bff;
+            background-color: #205b60;
             color: white;
         }
 

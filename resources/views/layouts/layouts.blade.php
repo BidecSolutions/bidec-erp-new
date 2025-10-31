@@ -1,7 +1,9 @@
 @php
     use App\Helpers\CommonHelper;
     $loginCnic = Session::get('login_cnic');
+    
 @endphp
+
 <!DOCTYPE html>
 <html>
 
@@ -256,7 +258,7 @@
             }
         </script>
         <?php
-        $accType = Auth::user()->acc_type;
+            $accType = Auth::user()->acc_type;
         ?>
         @if (Route::current()->getName() == 'companies.create')
             :
@@ -285,7 +287,7 @@
                         <div class="row">
                             <div class="row">
                                 <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-                                    <?php 
+                                    <?php /*?><?php 
                                                                 if ($accType == 'client') {
                                                             ?>
                                     <a class="btn btn-xs btn-primary" href="{{ url('companies/create') }}">Add New
@@ -307,7 +309,7 @@
                                     &nbsp;
                                     <?php    
                                                                 }
-                                                            ?>
+                                                            ?><?php */?>
                                 </div>
                             </div>
                             <div class="row">

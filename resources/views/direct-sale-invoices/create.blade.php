@@ -69,6 +69,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center">Product</th>
+                                                        <th class="text-center">Current Balance</th>
                                                         <th class="text-center">Sell Qty.</th>
                                                         <th class="text-center">Unit Price</th>
                                                         <th class="text-center">Sub Total</th>
@@ -81,7 +82,7 @@
                                                     <tr id="row_1">
                                                         <td>
                                                             <input type="hidden" name="siDataArray[]" value="1" />
-                                                            <select name="productId_1" id="productId_1" class="form-control requiredField select2" onchange="loadAveragePurchaseRate('1')">
+                                                            <select name="productId_1" id="productId_1" class="form-control requiredField select2" onchange="loadAveragePurchaseRateAndCurrentBalance('1')">
                                                                 <option value="">Select Product Detail</option>
                                                                 @foreach($products as $product)
                                                                     <optgroup label="{{ $product['name'] }}">
@@ -93,6 +94,9 @@
                                                                     </optgroup>
                                                                 @endforeach
                                                             </select>
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" name="current_balance_1" id="current_balance_1" class="form-control" onchange="calculateSubtotal(1)" />
                                                         </td>
                                                         <td>
                                                             <input type="number" name="qty_1" id="qty_1" class="form-control" onchange="calculateSubtotal(1)" />
@@ -238,7 +242,7 @@
             <tr id="row_${rowCounter}">
                 <td>
                     <input type="hidden" name="siDataArray[]" value="${rowCounter}" />
-                    <select name="productId_${rowCounter}" id="productId_${rowCounter}" class="form-control requiredField productSelection"  onchange="loadAveragePurchaseRate(${rowCounter})">
+                    <select name="productId_${rowCounter}" id="productId_${rowCounter}" class="form-control requiredField productSelection"  onchange="loadAveragePurchaseRateAndCurrentBalance(${rowCounter})">
                         <option value="">Select Product Detail</option>
                         @foreach($products as $product)
                             <optgroup label="{{ $product['name'] }}">
@@ -251,6 +255,7 @@
                         @endforeach
                     </select>
                 </td>
+                <td><input type="number" name="current_balance_${rowCounter}" id="current_balance_${rowCounter}" class="form-control" onchange="calculateSubtotal(${rowCounter})" /></td>
                 <td><input type="number" name="qty_${rowCounter}" id="qty_${rowCounter}" class="form-control" onchange="calculateSubtotal(${rowCounter})" /></td>
                 <td><input type="number" name="unitPrice_${rowCounter}" id="unitPrice_${rowCounter}" class="form-control" onchange="calculateSubtotal(${rowCounter})" /></td>
                 <td><input type="number" name="subTotal_${rowCounter}" id="subTotal_${rowCounter}" class="form-control" readonly /></td>
@@ -301,12 +306,12 @@
         $("#net_amount").val(netAmount.toFixed(2));
     }
 
-    function loadAveragePurchaseRate(counter) {
+    function loadAveragePurchaseRateAndCurrentBalance(counter) {
         var productVariantId = $('#productId_' + counter).val();
 
         if (!productVariantId) return;
         $.ajax({
-            url: "{{ route('direct-sale-invoices.product-wise-average-rate') }}",
+            url: "{{ route('direct-sale-invoices.product-wise-average-rate-and-current-balance') }}",
             type: "GET",
             data: {
                 product_variant_id: productVariantId
