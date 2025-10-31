@@ -599,7 +599,7 @@ class StoreChallanController extends Controller
             DB::commit();
 
 
-            return response()->json(['success' => 'Store Challan marked as Active successfully!']);
+            return response()->json(['success' => 'Store Challan Note marked as Active successfully!']);
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction on failure
             Log::error("Error updating GoodReceiptNote: " . $e->getMessage()); // Log error for debugging
