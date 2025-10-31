@@ -149,21 +149,24 @@ class PurchaseOrderController extends Controller
             'subTotal_*.numeric' => 'Subtotal must be numeric.',
         ]
         );
-           foreach ($request->poDataArray as $index) {
-        $request->validate([
-            "productId_{$index}" => 'required|integer',
-            "qty_{$index}" => 'required|numeric|min:1',
-            "unitPrice_{$index}" => 'required|numeric|min:0',
-            "subTotal_{$index}" => 'required|numeric|min:0',
-        ], [
-            "productId_{$index}.required" => "Product ID (Row {$index}) is required.",
-            "qty_{$index}.required" => "Quantity (Row {$index}) is required.",
-            "qty_{$index}.min" => "Quantity (Row {$index}) must be at least 1.",
-            "unitPrice_{$index}.required" => "Unit Price (Row {$index}) is required.",
-            "unitPrice_{$index}.min" => "Unit Price (Row {$index}) must be at least 0.",
-            "subTotal_{$index}.required" => "Subtotal (Row {$index}) is required.",
-            "subTotal_{$index}.min" => "Subtotal (Row {$index}) must be at least 0.",
-        ]);
+         foreach ($request->poDataArray as $index) {
+    $rowNumber = $index; // clearer name
+
+    $request->validate([
+        "productId_{$rowNumber}" => 'required|integer',
+        "qty_{$rowNumber}" => 'required|numeric|min:1',
+        "unitPrice_{$rowNumber}" => 'required|numeric|min:0',
+        "subTotal_{$rowNumber}" => 'required|numeric|min:0',
+    ], [
+        "productId_{$rowNumber}.required" => "Product (Row {$rowNumber}) is required.",
+        "qty_{$rowNumber}.required" => "Quantity (Row {$rowNumber}) is required.",
+        "qty_{$rowNumber}.min" => "Quantity (Row {$rowNumber}) must be at least 1.",
+        "unitPrice_{$rowNumber}.required" => " Unit Price (Row {$rowNumber}) is required.",
+        "unitPrice_{$rowNumber}.min" => "Unit Price (Row {$rowNumber}) must be at least 0.",
+        "subTotal_{$rowNumber}.required" => "Subtotal (Row {$rowNumber}) is required.",
+        "subTotal_{$rowNumber}.min" => "Subtotal (Row {$rowNumber}) must be at least 0.",
+    ]);
+
     }
 
             // Proceed with your logic if validation passes.
@@ -288,28 +291,32 @@ class PurchaseOrderController extends Controller
     }
     public function update(Request $request, $id)
     {
-        try {
-            $validatedData = $request->validate([
-                'po_date' => 'required|date',
-                'quotation_no' => 'nullable|string|max:255',
-                'quotation_date' => 'required|date',
-                'main_description' => 'nullable|string',
-                'paymentType' => 'required|integer',
-                'payment_type_rate' => 'required|numeric|min:0',
-                'supplier_id' => 'required|integer|exists:suppliers,id',
-                'po_note' => 'nullable|string',
-                'poDataArray' => 'required|array',
-                'poDataArray.*.product_id' => 'required|integer|exists:product_variants,id',
-                'poDataArray.*.qty' => 'required|numeric|min:1',
-                'poDataArray.*.unit_price' => 'required|numeric|min:0',
-                'poDataArray.*.sub_total' => 'required|numeric|min:0',
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors(),
-            ], 422);
-        }
+       $validatedData = $request->validate([
+    'po_date' => 'required|date',
+    'quotation_no' => 'nullable|string|max:255',
+    'quotation_date' => 'required|date',
+    'main_description' => 'nullable|string',
+    'paymentType' => 'required|integer',
+    'payment_type_rate' => 'required|numeric|min:0',
+    'supplier_id' => 'required|integer|exists:suppliers,id',
+    'po_note' => 'nullable|string',
+       'poDataArray' => 'required|array|min:1',
+    'poDataArray.*.product_id' => 'required',
+    'poDataArray.*.qty' => 'required|numeric|min:1',
+    'poDataArray.*.unit_price' => 'required|numeric|min:0',
+    'poDataArray.*.sub_total' => 'required|numeric|min:0',
+       ], [
+    // 💬 Custom nice messages:
+    'poDataArray.required' => 'At least one product is required.',
+    'poDataArray.*.product_id.required' => 'Product is required.',
+    'poDataArray.*.qty.required' => 'Quantity is required.',
+    'poDataArray.*.qty.numeric' => 'Quantity must be a number.',
+    'poDataArray.*.unit_price.required' => 'Unit Price is required.',
+    'poDataArray.*.unit_price.numeric' => 'Unit Price must be a valid number.',
+    'poDataArray.*.sub_total.required' => 'Subtotal is required.',
+]);
+
+
 
         // Begin transaction
 

@@ -728,6 +728,49 @@ class CommonHelper
     <?php
     }
 
+public static function displayCompanyInfo()
+{
+    try {
+        $company = DB::table('companies as c')
+            ->leftJoin('company_locations as cl', 'cl.company_id', '=', 'c.id')
+            ->select(
+                'c.name',
+                'c.address',
+                'c.contact_no',
+                'c.school_logo',
+                'cl.name as location'
+            )
+            ->where('c.status', 1)
+            ->first();
+
+        if (!$company) {
+            return '<p class="text-center text-danger">No active company found.</p>';
+        }
+
+        $logoPath = $company->school_logo;
+        if ($logoPath && !preg_match('/^http(s)?:\/\//', $logoPath)) {
+            $logoPath = asset($logoPath);
+        }
+
+        return '
+            <div class="text-center" style="margin-bottom: 30px;">
+                '.($logoPath ? '
+                    <div style="margin-bottom: 1px;">
+                        <img src="'.$logoPath.'" alt="Company Logo"
+                             style="width:100px;height:100px;object-fit:cover;
+                             border-radius:50%;border:2px solid #ddd;margin:0 auto 10px;">
+                    </div>' : '').'
+                <h3 style="margin:0;font-weight:700;">Company Name: '.strtoupper($company->name).'</h3>
+                <p style="margin:0;">Address: '.($company->address ?? '-').'</p>
+                <p style="margin:0;">Location: '.($company->location ?? '-').'</p>
+                <p style="margin:0;">Contact: '.($company->contact_no ?? '-').'</p>
+            </div>';
+    } catch (\Exception $e) {
+        return '<p class="text-danger text-center">Error loading company info: '.$e->getMessage().'</p>';
+    }
+}
+
+
     public static function createFormLinkForList($param1, $param2, $param3, $param4)
     {
         return '<a href="' . url('' . $param4 . '?pageType=' . $param2 . '&&parentCode=' . $param3 . '#SFR') . '" class="btn btn-sm btn-success">Create Form</a>';

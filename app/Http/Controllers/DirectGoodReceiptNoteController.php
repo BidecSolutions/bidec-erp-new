@@ -411,6 +411,7 @@ class DirectGoodReceiptNoteController extends Controller
         $goodReceiptNoteDetail = DB::table('good_receipt_notes')
             ->join('suppliers', 'good_receipt_notes.supplier_id', '=', 'suppliers.id')
             ->leftJoin('tax_accounts as ta','good_receipt_notes.tax_account_id','=','ta.acc_id')
+            ->leftJoin('tax_accounts as ta','good_receipt_notes.tax_account_id','=','ta.acc_id')
             ->select('good_receipt_notes.*', 'suppliers.name as supplier','ta.name as tax_account_name')
             ->where('good_receipt_notes.id', $goodReceiptNoteId)
             ->first();
