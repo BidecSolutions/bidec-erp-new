@@ -20,6 +20,9 @@
 
 <div class="well">
     <div class="row" id="PrintGoodReceiptNoteDetail">
+           <div class="col-lg-12 text-center mb-3">
+       {!! CommonHelper::displayCompanyInfo() !!}
+        </div>
         <style>
             .floatLeft{
                 width: 45%;
@@ -75,27 +78,43 @@
                             <th class="text-center">Purchase Order Detail</th>
                             <th class="text-center">Quotation No</th>
                             <th class="text-center">Expiry Date</th>
+                                 <th class="text-center">Unit Price</th> 
                             <th class="text-center">Receive Quantity</th>
+                               <th class="text-center">Sub Total</th> 
                         </tr>
                     </thead>
-                    <tbody>
-                        @php
-                            $totalAmount = 0;
-                        @endphp
-                        @foreach ($goodReceiptNoteDataDetails as $key => $row)
-                            <tr>
-                                <td>
-                                    {{ $row->product_name ?? 'N/A' }} -
-                                    {{ $row->size_name ?? 'N/A' }} -
-                                    {{ isset($row->product_variant_amount) ? number_format($row->product_variant_amount, 2) : '0.00' }}
-                                </td>
-                                <td>{{$row->po_no}} - {{CommonHelper::changeDateFormat($row->po_date)}}</td>
-                                <td>{{$row->quotation_no}}</td>
-                                <td>{{CommonHelper::changeDateFormat($row->expiry_date)}}</td>
-                                <td class="text-center">{{ $row->receive_qty ?? 0 }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
+                     <tbody>
+            @php
+                $totalAmount = 0;
+            @endphp
+            @foreach ($goodReceiptNoteDataDetails as $key => $row)
+                @php
+                    $unitPrice = $row->po_unit_price ?? 0;
+                    $receiveQty = $row->receive_qty ?? 0;
+                    $subTotal = $unitPrice * $receiveQty;
+                    $totalAmount += $subTotal;
+                @endphp
+                <tr>
+                    <td>
+                        {{ $row->product_name ?? 'N/A' }} -
+                        {{ $row->size_name ?? 'N/A' }} -
+                        {{ isset($row->product_variant_amount) ? number_format($row->product_variant_amount, 2) : '0.00' }}
+                    </td>
+                    <td>{{ $row->po_no }} - {{ CommonHelper::changeDateFormat($row->po_date) }}</td>
+                    <td>{{ $row->quotation_no }}</td>
+                    <td>{{ CommonHelper::changeDateFormat($row->expiry_date) }}</td>
+                    <td class="text-center">{{ number_format($unitPrice, 2) }}</td>
+                    <td class="text-center">{{ $receiveQty }}</td>
+                    <td class="text-center">{{ number_format($subTotal, 2) }}</td> <!-- Sub Total -->
+                </tr>
+            @endforeach
+
+            <!-- Total Amount Row -->
+            <tr>
+                <th colspan="6" class="text-left">Total Amount</th>
+                <th class="text-center">{{ number_format($totalAmount, 2) }}</th>
+            </tr>
+        </tbody>
                 </table>
             </div>
         </div>

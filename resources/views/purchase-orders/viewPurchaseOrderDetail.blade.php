@@ -21,35 +21,7 @@
 <div class="well">
     <div class="row" id="PrintPurchaseOrderDetail">
           <div class="col-lg-12 text-center mb-3">
-    @if (!empty($company->school_logo))
-    @php
-        $logoPath = $company->school_logo;
-        if (!preg_match('/^http(s)?:\/\//', $logoPath)) {
-            $logoPath = asset($logoPath);
-        }
-    @endphp
-
-    <div class="text-center" style="margin-bottom: 15px;">
-        <img src="{{ $logoPath }}" alt="Company Logo"
-             style="
-                width: 100px;
-                height: 100px;
-                object-fit: cover;
-                border-radius: 50%;
-                border: 2px solid #ddd;
-                display: block;
-                margin: 0 auto 10px auto;
-             ">
-    </div>
-@endif
-
-
-<div class="text-center" style="margin-bottom: 30px;">
-    <h3 style="margin: 0; font-weight: 700;">Company Name: {{ strtoupper($company->name) }}</h3>
-    <p style="margin: 0;">Company Address: {{ $company->address ?? '-' }}</p>
-    <p style="margin: 0;">Company Contact: {{ $company->contact_no ?? '-' }}</p>
-</div>
-
+       {!! CommonHelper::displayCompanyInfo() !!}
         </div>
         <style>
             .floatLeft{
@@ -166,3 +138,5 @@
         </div>
     </div>
 </div>
+
+
