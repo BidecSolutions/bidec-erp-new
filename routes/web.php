@@ -49,7 +49,8 @@ use App\Http\Controllers\{
     TaxAccountsController,
     PurchaseInvoiceController,
     SaleInvoiceController,
-    StoreChallanController
+    BOMController
+
 };
 
 //use GPBMetadata\Google\Api\Auth;
@@ -340,6 +341,28 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/store-challans/approveStoreChallanVoucher', [StoreChallanController::class, 'approveStoreChallanVoucher']);
     Route::post('/store-challans/storeChallanVoucherRejectAndRepost', [StoreChallanController::class, 'storeChallanVoucherRejectAndRepost']);
     Route::post('/store-challans/storeChallanVoucherActiveAndInactive', [StoreChallanController::class, 'storeChallanVoucherActiveAndInactive']);
+
+
+     Route::controller(BOMController::class)->group(function () {
+        Route::prefix('bom')->group(function () {
+            Route::get('/', 'index')->name('bom.index');
+            Route::get('/create', 'create')->name('bom.create');
+            Route::post('/store', 'store')->name('bom.store');
+            Route::post('/status/{id}', 'status')->name('bom.status');
+            Route::get('/{id}/edit', 'edit')->name('bom.edit');
+            Route::post('/update/{id}', 'update')->name('bom.update');
+            Route::get('/show', 'show')->name('payments.show');
+            Route::post('/destroy/{id}', 'destroy')->name('bom.destroy');
+            Route::get('/get-last-purchase-price/{productId}', 'getLastPurchasePrice');
+
+        });
+    });
+
+
+    Route::post('/bom/approvePurchaseOrderVoucher', [BOMController::class, 'approvePurchaseOrderVoucher']);
+    Route::post('/bom/purchaseOrderVoucherRejectAndRepost', [BOMController::class, 'purchaseOrderVoucherRejectAndRepost']);
+    Route::post('/bom/purchaseOrderVoucherActiveAndInactive', [BOMController::class, 'purchaseOrderVoucherActiveAndInactive']);
+
 
 
     Route::controller(TransferNoteController::class)->group(function () {
