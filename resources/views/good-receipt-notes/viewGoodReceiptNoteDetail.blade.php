@@ -104,8 +104,9 @@
                     <td>{{ $row->quotation_no }}</td>
                     <td>{{ CommonHelper::changeDateFormat($row->expiry_date) }}</td>
                     <td class="text-center">{{ number_format($unitPrice, 2) }}</td>
-                    <td class="text-center">{{ $receiveQty }}</td>
-                    <td class="text-center">{{ number_format($subTotal, 2) }}</td> <!-- Sub Total -->
+                
+                    <td class="text-center">{{ number_format($receiveQty, 2) }}</td> 
+                    <td class="text-center">{{ number_format($subTotal, 2) }}</td> 
                 </tr>
             @endforeach
 

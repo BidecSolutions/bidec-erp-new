@@ -48,14 +48,13 @@
 <script>
     let x = 1;
     $('.po-selection').select2();
-
     function addMoreRows() {
         x++;
         const data = `
             <div id="removeGRNR_${x}">
                 <div class="lineHeight">&nbsp;</div>
                 <div class="row">
-                    <div class="col-lg-10">
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
                         <label>PO Detail</label>
                         <input type="hidden" name="poRowsArray[]" value="${x}" />
                         <select name="po_data_detail_${x}" id="po_data_detail_${x}" class="form-control po-selection" onchange="handleSelection(${x})">
@@ -67,17 +66,16 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-lg-2" style="margin-top:30px;">
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12" style="margin-top:30px;">
                         <button class="btn btn-xs btn-danger" onclick="removeGoodReceiptNoteRow(${x})">Remove</button>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-12" id="poDataDetail${x}"></div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="poDataDetail${x}"></div>
                 </div>
             </div>
         `;
         $('#poRows').append(data);
-        $('.po-selection').select2();
     }
 
     function handleSelection(id) {
@@ -94,10 +92,9 @@
         const [poDataId, purchaseOrderId, purchaseOrderQty, previousReceiptQty] = selectedValue.split('<*>');
         const remainingQty = purchaseOrderQty - previousReceiptQty;
 
-        // Prevent duplicate selection
         if (selectedValues.filter(val => val === poDataId).length > 1) {
             alert('The same PO Detail cannot be selected multiple times.');
-            $(`#po_data_detail_${id}`).val('').trigger('change');
+            $(`#po_data_detail_${id}`).val('');
             $(`#poDataDetail${id}`).html('');
             return;
         }
@@ -107,30 +104,25 @@
             <div class="row">
                 <input type="hidden" name="purchase_order_id_${id}" value="${purchaseOrderId}" />
                 <input type="hidden" name="po_data_id_${id}" value="${poDataId}" />
-
+                
                 <div class="col-lg-3">
                     <label>Quotation No</label>
                     <input type="text" name="quotation_no_${id}" class="form-control" />
                 </div>
-
+                
                 <div class="col-lg-3">
                     <label>Expiry Date</label>
                     <input type="date" name="expiry_date_${id}" class="form-control" value="${new Date().toISOString().split('T')[0]}" />
                 </div>
-
+                
                 <div class="col-lg-3">
                     <label>Remaining Purchase Order Qty</label>
-                    <input type="number" value="${remainingQty}" class="form-control" readonly />
+                    <input type="number" value="${remainingQty}" disabled class="form-control" />
                 </div>
-
+                
                 <div class="col-lg-3">
                     <label>Receipt Qty</label>
-                    <input type="number" 
-                           name="receive_qty_${id}" 
-                           class="form-control receipt-qty" 
-                           data-remaining="${remainingQty}" 
-                           min="0" step="0.01">
-                    <small class="text-danger error-message" style="display:none;"></small>
+                    <input type="number" name="receive_qty_${id}" class="form-control" />
                 </div>
             </div>
         `;
@@ -140,44 +132,4 @@
     function removeGoodReceiptNoteRow(rowId) {
         $(`#removeGRNR_${rowId}`).remove();
     }
-
-    // Validation: check Receipt Qty not greater than Remaining Qty
-    $(document).on('input', '.receipt-qty', function () {
-        const receiptQty = parseFloat($(this).val()) || 0;
-        const remainingQty = parseFloat($(this).data('remaining')) || 0;
-        const errorField = $(this).siblings('.error-message');
-
-        if (receiptQty > remainingQty) {
-            errorField.text(`Receipt Qty cannot exceed remaining quantity (${remainingQty}).`);
-            errorField.show();
-            $(this).addClass('is-invalid');
-        } else {
-            errorField.hide();
-            $(this).removeClass('is-invalid');
-        }
-    });
-
-    //  Prevent form submission if any invalid qty found
-    $('form').on('submit', function (e) {
-        let hasError = false;
-
-        $('.receipt-qty').each(function () {
-            const receiptQty = parseFloat($(this).val()) || 0;
-            const remainingQty = parseFloat($(this).data('remaining')) || 0;
-            const errorField = $(this).siblings('.error-message');
-
-            if (receiptQty > remainingQty) {
-                errorField.text(`Receipt Qty cannot exceed remaining quantity (${remainingQty}).`);
-                errorField.show();
-                $(this).addClass('is-invalid');
-                hasError = true;
-            }
-        });
-
-        if (hasError) {
-            e.preventDefault();
-            alert('Please correct the highlighted errors before submitting.');
-        }
-    });
 </script>
-
